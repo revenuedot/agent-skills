@@ -40,7 +40,7 @@ The importer reads all four variables, so the flags `--rc-key`, `--rc-project`, 
 ## Phase 1: Get the importer
 
 1. Run `npx revenuedot --help`.
-2. If npm answers 404, the `revenuedot` package is not on npm yet. Run it from source instead:
+2. If `npx` cannot reach npm (an offline or locked-down machine), run it from source instead:
    ```bash
    git clone https://github.com/revenuedot/revenuedot.git && cd revenuedot && pnpm install
    alias revenuedot='pnpm --filter revenuedot cli'

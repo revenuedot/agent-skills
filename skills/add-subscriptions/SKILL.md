@@ -38,14 +38,13 @@ The RevenueDot MCP server lets you create the catalog with tools instead of curl
 claude mcp add --transport http revenuedot https://mcp.revenuedot.app/mcp
 ```
 
-The client signs in with OAuth, or send `Authorization: Bearer sk_...`. For a self-hosted server, run the MCP server locally over stdio with `REVENUEDOT_URL` and `REVENUEDOT_API_KEY` set (`REVENUEDOT_URL` defaults to `https://api.revenuedot.app`). The `@revenuedot/mcp` package is not on npm yet, so `npx -y @revenuedot/mcp` answers 404. Run it from source instead:
+The client signs in with OAuth, or send `Authorization: Bearer sk_...`. For a self-hosted server, run the MCP server locally over stdio with `REVENUEDOT_URL` and `REVENUEDOT_API_KEY` set (`REVENUEDOT_URL` defaults to `https://api.revenuedot.app`).:
 
 ```bash
-git clone https://github.com/revenuedot/mcp.git && cd mcp && pnpm install && pnpm build
-claude mcp add revenuedot -e REVENUEDOT_API_KEY=sk_... -e REVENUEDOT_URL=https://revenuedot.example.com -- node "$PWD/dist/cli.js"
+claude mcp add revenuedot -e REVENUEDOT_API_KEY=sk_... -e REVENUEDOT_URL=https://revenuedot.example.com -- npx -y @revenuedot/mcp
 ```
 
-Self-hosters can also serve HTTP themselves with `node dist/cli.js --http --port 8788 --url https://their-server`.
+Self-hosters can also serve HTTP themselves with `npx -y @revenuedot/mcp --http --port 8788 --url https://their-server`.
 
 Every tool takes an optional `project_id`, which defaults to the key's only project.
 
