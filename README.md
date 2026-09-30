@@ -18,6 +18,6 @@ npx skills add revenuedot/agent-skills
 
 The skills work best with the RevenueDot MCP server connected (`npx -y @revenuedot/mcp`, see [revenuedot/mcp](https://github.com/revenuedot/mcp)).
 
-RevenueDot is pre-alpha. Each skill names the known gaps it depends on.
+Each skill names the known gaps it depends on.
 
 RevenueDot is not affiliated with RevenueCat, Inc.
