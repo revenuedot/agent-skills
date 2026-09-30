@@ -19,7 +19,7 @@ RevenueDot is not affiliated with RevenueCat, Inc.
 
 ## What you need from the user
 
-1. A running RevenueDot server URL, served at the root of its host (the SDKs drop any path). If there is none, use the `self-host` skill first.
+1. A running RevenueDot server URL, served at the root of its host (the SDKs drop any path). For RevenueDot Cloud it is `https://api.revenuedot.app` (sign up at https://app.revenuedot.app). To run your own server, use the `self-host` skill first.
 2. A RevenueDot secret key (`sk_...`) for the target project: dashboard, **API keys** page.
 3. A RevenueCat secret API key, **version V2**, with read access to project configuration and customer information (RevenueCat: Project settings > API keys > New secret API key). It must start with `sk_` (or `atk_` for an OAuth token); a public SDK key is rejected.
 4. The RevenueCat project id (starts with `proj`, in the RevenueCat dashboard URL).

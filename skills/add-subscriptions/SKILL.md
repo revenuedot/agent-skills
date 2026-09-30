@@ -18,7 +18,7 @@ RevenueDot is not affiliated with RevenueCat, Inc.
 
 ## What you need
 
-1. A RevenueDot server URL, served at the root of its host (the SDKs drop any path). No server yet: use the `self-host` skill.
+1. A RevenueDot server URL, served at the root of its host (the SDKs drop any path). For RevenueDot Cloud it is `https://api.revenuedot.app` (sign up at https://app.revenuedot.app, free plan). To run your own server, use the `self-host` skill.
 2. A RevenueDot secret key (`sk_...`): dashboard, **API keys** page.
 3. The app's bundle id (iOS) and package name (Android).
 
@@ -32,13 +32,20 @@ A secret key belongs to one project, so `GET /v2/projects` returns exactly that 
 
 ## Phase 1: Connect the MCP server (optional)
 
-The RevenueDot MCP server lets you create the catalog with tools instead of curl. In Claude Code:
+The RevenueDot MCP server lets you create the catalog with tools instead of curl. For RevenueDot Cloud, connect the hosted server. In Claude Code:
 
 ```bash
-claude mcp add revenuedot -e REVENUEDOT_API_KEY=sk_... -e REVENUEDOT_URL=https://revenuedot.example.com -- npx -y @revenuedot/mcp
+claude mcp add --transport http revenuedot https://mcp.revenuedot.app/mcp
 ```
 
-Other clients: run `npx -y @revenuedot/mcp` over stdio with the same two environment variables (`REVENUEDOT_URL` defaults to `https://api.revenuedot.app`), or connect to the hosted endpoint `https://mcp.revenuedot.app/mcp` with OAuth or `Authorization: Bearer sk_...`. Self-hosters can serve HTTP themselves with `npx -y @revenuedot/mcp --http --port 8788 --url https://their-server`.
+The client signs in with OAuth, or send `Authorization: Bearer sk_...`. For a self-hosted server, run the MCP server locally over stdio with `REVENUEDOT_URL` and `REVENUEDOT_API_KEY` set (`REVENUEDOT_URL` defaults to `https://api.revenuedot.app`). The `@revenuedot/mcp` package is not on npm yet, so `npx -y @revenuedot/mcp` answers 404. Run it from source instead:
+
+```bash
+git clone https://github.com/revenuedot/mcp.git && cd mcp && pnpm install && pnpm build
+claude mcp add revenuedot -e REVENUEDOT_API_KEY=sk_... -e REVENUEDOT_URL=https://revenuedot.example.com -- node "$PWD/dist/cli.js"
+```
+
+Self-hosters can also serve HTTP themselves with `node dist/cli.js --http --port 8788 --url https://their-server`.
 
 Every tool takes an optional `project_id`, which defaults to the key's only project.
 
@@ -196,7 +203,7 @@ Complete paywall screens per platform: https://github.com/revenuedot/examples/tr
 **Check:** the app shows `pro` active, and the REST call lists the `pro` entitlement id with an `expires_at` about one period ahead.
 
 Known limits today:
-- Test Store prices show as $0.00, because RevenueDot does not store Test Store prices yet.
+- Test Store products show $0.00 unless the product has a price. Add `"test_store_price":{"amount_micros":9990000,"currency":"USD"}` to the product's create (or update) body for a $9.99 price. Each Test Store product has one price.
 - In Expo Go and on the web, `react-native-purchases` only accepts `test_` and `rcb_` keys. Real store purchases need a development build (`npx expo run:ios` / `npx expo run:android`).
 
 ## Next

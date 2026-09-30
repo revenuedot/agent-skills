@@ -16,7 +16,7 @@ npx skills add revenuedot/agent-skills
 | [`add-subscriptions`](skills/add-subscriptions/SKILL.md) | You want subscriptions and a paywall in an iOS, Android, React Native or Flutter app: create the catalog, configure the SDK, gate on an entitlement, test with the Test Store |
 | [`self-host`](skills/self-host/SKILL.md) | You want to run RevenueDot yourself with Docker and Postgres: first account, secret key, store notifications, backups and upgrades |
 
-The skills work best with the RevenueDot MCP server connected (`npx -y @revenuedot/mcp`, see [revenuedot/mcp](https://github.com/revenuedot/mcp)).
+The skills work with RevenueDot Cloud (sign up at https://app.revenuedot.app; API `https://api.revenuedot.app`) or a self-hosted server. They work best with the RevenueDot MCP server connected: the hosted one at `https://mcp.revenuedot.app/mcp` (OAuth or a secret key), or a local one from [revenuedot/mcp](https://github.com/revenuedot/mcp). The `@revenuedot/mcp` and `revenuedot` npm packages are not published yet, so the skills say how to run them from source.
 
 Each skill names the known gaps it depends on.
 
