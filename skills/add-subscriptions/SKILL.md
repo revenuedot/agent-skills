@@ -196,7 +196,6 @@ Complete paywall screens per platform: https://github.com/revenuedot/examples/tr
 **Check:** the app shows `pro` active, and the REST call lists the `pro` entitlement id with an `expires_at` about one period ahead.
 
 Known limits today:
-- The native iOS SDK cannot load Test Store products from RevenueDot: `offerings()` fails with "No base price found for product". Test the iOS flow with an App Store sandbox account (an `app_store` app with its In-App Purchase key), or test the Test Store flow in React Native on the web or in Expo Go.
 - Test Store prices show as $0.00, because RevenueDot does not store Test Store prices yet.
 - In Expo Go and on the web, `react-native-purchases` only accepts `test_` and `rcb_` keys. Real store purchases need a development build (`npx expo run:ios` / `npx expo run:android`).
 
