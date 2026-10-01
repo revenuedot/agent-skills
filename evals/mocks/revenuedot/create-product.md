@@ -1,0 +1,1 @@
+{"object":"product","id":"prod_new_{{input.store_identifier}}","store_identifier":"{{input.store_identifier}}","type":"{{input.type}}","app_id":"{{input.app_id}}","display_name":"{{input.display_name}}"}

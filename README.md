@@ -50,4 +50,5 @@ Docs: https://revenuedot.app/docs/guides/connect-ai-assistants. Help: https://re
 
 - `.claude-plugin/plugin.json` (Claude), `plugin.json` (ChatGPT and Codex, with `extensions.com.openai`) and `.codex-plugin/plugin.json` (older Codex path, kept equal), `.mcp.json` and `mcp.json` (the hosted server), `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json`, `assets/`, `skills/`.
 - `submission/`: the listing copy, test prompts and review notes for the ChatGPT and Claude directories.
+- `evals/`: the `claude plugin eval` suite, 11 cases (one or more per skill, two security cases, two unrelated prompts) with the MCP tools mocked from the real tool list. Run `claude plugin eval .` from the repo root.
 - Check everything with `node --test test/plugin.test.mjs` and `claude plugin validate . --strict`.

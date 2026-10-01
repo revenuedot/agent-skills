@@ -1,0 +1,1 @@
+{"object":"test_purchase","app_user_id":"{{input.app_user_id}}","product_id":"{{input.product_id}}","scenario":"purchase","customer":{"id":"{{input.app_user_id}}","active_entitlements":{"items":[{"entitlement_id":"entl_pro01","lookup_key":"pro","expires_at":1793404800000}]}}}

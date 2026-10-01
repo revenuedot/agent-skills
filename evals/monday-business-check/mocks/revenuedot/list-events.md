@@ -1,0 +1,9 @@
+{"object":"list","items":[
+{"object":"event","id":"evt_a1","type":"BILLING_ISSUE","app_user_id":"u_11","store":"play_store","event_timestamp_ms":1790780000000},
+{"object":"event","id":"evt_a2","type":"CANCELLATION","app_user_id":"u_12","store":"app_store","event_timestamp_ms":1790760000000},
+{"object":"event","id":"evt_a3","type":"BILLING_ISSUE","app_user_id":"u_13","store":"app_store","event_timestamp_ms":1790690000000},
+{"object":"event","id":"evt_a4","type":"CANCELLATION","app_user_id":"u_14","store":"play_store","event_timestamp_ms":1790600000000},
+{"object":"event","id":"evt_a5","type":"CANCELLATION","app_user_id":"u_15","store":"app_store","event_timestamp_ms":1790500000000},
+{"object":"event","id":"evt_a6","type":"BILLING_ISSUE","app_user_id":"u_16","store":"play_store","event_timestamp_ms":1790400000000},
+{"object":"event","id":"evt_a7","type":"CANCELLATION","app_user_id":"u_17","store":"app_store","event_timestamp_ms":1790300000000}
+],"next_page":null}

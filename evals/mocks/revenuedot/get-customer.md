@@ -1,0 +1,1 @@
+{"object":"customer","id":"{{input.customer_id}}","project_id":"proj_habitly01","first_seen_at":1790726400000,"active_entitlements":{"items":[]},"attributes":{"items":[]},"subscriptions":[],"purchases":[]}
