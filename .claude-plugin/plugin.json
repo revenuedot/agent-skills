@@ -8,8 +8,11 @@
     "email": "support@revenuedot.app",
     "url": "https://revenuedot.app"
   },
-  "homepage": "https://revenuedot.app/docs/guides/connect-ai-assistants",
+  "homepage": "https://revenuedot.app",
+  "documentationUrl": "https://revenuedot.app/docs/guides/connect-ai-assistants",
+  "supportUrl": "https://revenuedot.app/docs/help",
   "privacyPolicyUrl": "https://revenuedot.app/legal/privacy",
+  "termsOfServiceUrl": "https://revenuedot.app/legal/terms",
   "repository": "https://github.com/revenuedot/agent-skills",
   "license": "MIT",
   "keywords": [
