@@ -8,7 +8,7 @@
     {
       "name": "revenuedot",
       "source": "./",
-      "description": "RevenueDot connector and skills: manage in-app subscriptions, customers, webhooks and revenue from chat.",
+      "description": "RevenueDot connector and skills: manage your mobile app's subscriptions, in-app purchases, customers, paywall offerings and revenue from chat.",
       "category": "productivity"
     }
   ],

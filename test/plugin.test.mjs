@@ -8,7 +8,8 @@ import { execFileSync } from "node:child_process";
 const root = resolve(import.meta.dirname, "..");
 const read = (p) => readFileSync(resolve(root, p), "utf8");
 const json = (p) => JSON.parse(read(p));
-const MCP_URL = "https://mcp.revenuedot.app/mcp";
+// The Claude plugin points at the same URL as the Claude directory connector, so people with both see one set of tools.
+const MCP_URL = "https://mcp.revenuedot.app/claude/mcp";
 
 test("ChatGPT and Codex manifest has the listing fields and existing assets", () => {
   const m = json("plugin.json");

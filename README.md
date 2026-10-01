@@ -9,7 +9,7 @@
 | Claude Code or Claude Desktop | `/plugin marketplace add revenuedot/agent-skills`, then `/plugin install revenuedot@revenuedot` |
 | Codex | `codex plugin marketplace add revenuedot/agent-skills`, then install `revenuedot` |
 | ChatGPT | Search RevenueDot in the plugin directory (after approval), or add `https://mcp.revenuedot.app/mcp` as a connector in developer mode |
-| Claude connector directory | Search RevenueDot in the connector directory (after approval), or add `https://mcp.revenuedot.app/mcp` as a custom connector |
+| Claude connector directory | Search RevenueDot in the connector directory (after approval), or add `https://mcp.revenuedot.app/claude/mcp` as a custom connector |
 | Skills only, any agent | `npx skills add revenuedot/agent-skills` |
 
 Connecting asks you to sign in to RevenueDot, pick one project and choose read only or read and change. Cancelling and refunding are a separate checkbox.
