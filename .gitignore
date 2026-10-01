@@ -1,2 +1,2 @@
 dist/
-evals/results/
+**/evals/results/

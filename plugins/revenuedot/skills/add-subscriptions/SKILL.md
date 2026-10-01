@@ -1,6 +1,6 @@
 ---
 name: add-subscriptions
-description: Use this skill when the user wants to add in-app subscriptions, a paywall, a premium plan, a free trial or a lifetime purchase to an iOS, Android, React Native, Flutter or Expo app, with RevenueDot as the subscription backend. It covers creating the catalog, installing and configuring the SDK, showing offerings, gating features on an entitlement and testing with the Test Store.
+description: Use this skill when the user wants to add in-app subscriptions, a paywall, a premium plan, a free trial or a lifetime purchase to an iOS, Android, React Native, Flutter or Expo app, with RevenueDot as the subscription backend. It covers creating the catalog, installing and configuring the SDK, showing offerings, gating features on an entitlement, testing with the Test Store and connecting App Store and Google Play credentials, including when the user pastes a store key into the chat.
 license: MIT
 ---
 
@@ -14,7 +14,7 @@ RevenueDot is not affiliated with RevenueCat, Inc.
 
 - **Do every RevenueDot step with the RevenueDot MCP tools.** They sign in with OAuth, so you never need a secret key. Do not ask the user for a secret key (`sk_...`), and do not call the REST API with one.
 - **Store credentials are entered by the user in the dashboard.** Never ask the user to paste an App Store key or a Google service account into the chat.
-- **If the user pastes a key into the chat anyway,** do not repeat, store or use it. Tell them the key is now exposed: revoke it (an App Store key in App Store Connect > Users and Access > Integrations, a Google service account key in the Google Cloud console, a RevenueDot or RevenueCat secret key on that dashboard's API keys page), create a new one, and enter it in the RevenueDot dashboard.
+- **If the user pastes a key into the chat anyway,** do not repeat any part of it (not even the key ID or issuer ID), store it or pass it to a tool, and do not tell them to upload that key. Tell them it is now exposed, in this order: revoke it (an App Store key in App Store Connect > Users and Access > Integrations, a Google service account key in the Google Cloud console, a RevenueDot or RevenueCat secret key on that dashboard's API keys page), create a new one, and enter only the new one in the RevenueDot dashboard (Apps, then the app, for store keys).
 - Only the public SDK key (`test_`, `appl_`, `goog_`) goes into the app. It is public and ships inside the app.
 - Ask the user for the product ids they created (or will create) in App Store Connect and Play Console. Store product ids must match exactly.
 - Run the check at the end of each phase before moving on.

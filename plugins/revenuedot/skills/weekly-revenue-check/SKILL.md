@@ -19,7 +19,7 @@ RevenueDot is not affiliated with RevenueCat, Inc.
 
 ## Report
 
-Write at most five lines, answer first:
+Write at most five lines. Line 1 is the headline itself, with the MRR number: no greeting or summary line before it, and no notes after line 5 unless the user asks.
 
 1. The headline: MRR now, and whether it rose or fell over 28 days.
 2. New customers and active subscriptions.

@@ -14,7 +14,8 @@ const json = (p) => JSON.parse(read(p));
 const pread = (p) => read(`${PLUGIN}/${p}`);
 const pjson = (p) => json(`${PLUGIN}/${p}`);
 const walk = (dir) => readdirSync(dir).flatMap((f) => { const p = resolve(dir, f); return statSync(p).isDirectory() ? walk(p) : [p]; });
-const pluginFiles = walk(pluginDir).map((f) => relative(pluginDir, f));
+// evals/results/ holds local, gitignored eval output (model answers), not plugin files.
+const pluginFiles = walk(pluginDir).map((f) => relative(pluginDir, f)).filter((f) => !f.startsWith("evals/results/"));
 const IMAGE = /\.(png|jpe?g|gif|webp|svg|ico|bmp|avif|ttf|otf|woff2?)\b/i;
 // The Claude plugin points at the same URL as the Claude directory connector, so people with both see one set of tools.
 const MCP_URL = "https://mcp.revenuedot.app/claude/mcp";
