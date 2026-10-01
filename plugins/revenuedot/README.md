@@ -12,7 +12,6 @@
 | Claude connector directory | Search RevenueDot in the connector directory, or add `https://mcp.revenuedot.app/claude/mcp` as a custom connector |
 | ChatGPT | Search RevenueDot in the plugin directory, or add `https://mcp.revenuedot.app/chatgpt/mcp` as a connector in developer mode |
 | Codex | `codex plugin marketplace add revenuedot/agent-skills`, then install `revenuedot` |
-| Skills only, any agent | `npx skills add revenuedot/agent-skills` |
 
 You need a RevenueDot account: [start free on RevenueDot Cloud](https://app.revenuedot.app/signup), or run your own server. Connecting opens RevenueDot's sign-in page, where you pick one project and choose **read only** or **read and change**. Cancelling, refunding and extending subscriptions need a separate **Money actions** checkbox, and the assistant asks before every change.
 

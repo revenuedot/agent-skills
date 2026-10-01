@@ -71,7 +71,7 @@ For a self-hosted server, `REVENUEDOT_URL` is its own address. The importer read
    - If the user has Google Play purchase tokens in a CSV, add `--google-tokens tokens.csv`. The CSV needs a `purchase_token` column plus either `order_id`, or `app_user_id` and `product_id`.
    - Add `--json` for a machine-readable report. Use `--to-project <id>` only when the key can see several projects.
 
-**Check:** the report says `Import finished` and `Customers (pass N, complete)`. Then call `get-import-status`: it returns `customers`, `subscriptions` and `needs_token_refresh`. `list-apps`, `list-products`, `list-entitlements` and `list-offerings` show the imported catalog.
+**Check:** the report says `Import finished`, and its Customers line ends with `complete`. Then call `get-import-status`: it returns `customers`, `subscriptions` and `needs_token_refresh`. `list-apps`, `list-products`, `list-entitlements` and `list-offerings` show the imported catalog.
 
 ## Phase 3: Add store credentials, then import again
 
