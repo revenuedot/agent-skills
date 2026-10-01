@@ -6,4 +6,4 @@ timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep]
 ---
 
-I'm building a meditation app in Expo (React Native) and just signed up for RevenueDot. I want a Pro tier, monthly and yearly, with a paywall screen, and I want to try buying it before I deal with App Store Connect. What do I need to do?
+I'm building Habitly, a meditation app in Expo (React Native), and I've connected its RevenueDot project. I want a Pro tier, monthly and yearly, with a paywall screen, and I want to try buying it before I deal with App Store Connect. What do I need to do?
