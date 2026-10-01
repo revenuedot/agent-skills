@@ -13,7 +13,7 @@ RevenueDot is not affiliated with RevenueCat, Inc.
 ## Rules for the agent
 
 - **Never read, ask for, print or pass a secret key.** That covers the RevenueDot secret key, the RevenueCat secret key and the store keys. Do RevenueDot steps with the RevenueDot MCP tools, which sign in with OAuth.
-- **The importer runs in the developer's own terminal.** `npx revenuedot@0.1.0 import` needs a RevenueCat and a RevenueDot secret key, so the developer runs those commands and types the keys there. Show the commands; do not run them yourself, and do not ask for the keys or the shell's variables. The developer can paste the report back: it contains no keys.
+- **The importer runs in the developer's own terminal.** `npx revenuedot@0.2.0 import` needs a RevenueCat and a RevenueDot secret key, so the developer runs those commands and types the keys there. Show the commands; do not run them yourself, and do not ask for the keys or the shell's variables. The developer can paste the report back: it contains no keys.
 - **Store credentials are entered by the developer in the dashboard.** Never ask for the .p8 file or the service account JSON in the chat.
 - **If the user pastes a key into the chat anyway,** do not repeat, store or use it. Tell them the key is now exposed: revoke it (an App Store key in App Store Connect > Users and Access > Integrations, a Google service account key in the Google Cloud console, a RevenueDot or RevenueCat secret key on that dashboard's API keys page), create a new one, and enter it in the RevenueDot dashboard.
 - **Follow the phases in order.** Each phase ends with a check. Do not start the next phase until the check passes.
@@ -33,26 +33,19 @@ RevenueDot is not affiliated with RevenueCat, Inc.
 
 ## Phase 1: Get the importer
 
-1. Run `npx revenuedot@0.1.0 --help`. It needs no key.
+1. Run `npx revenuedot@0.2.0 --help`. It needs no key.
 2. If `npx` cannot reach npm (an offline or locked-down machine), run it from source instead:
    ```bash
    git clone https://github.com/revenuedot/revenuedot.git && cd revenuedot && pnpm install
    alias revenuedot='pnpm --filter revenuedot cli'
    ```
-   In the steps below, replace `npx revenuedot@0.1.0` with `revenuedot`, run from inside the clone. pnpm runs the command in `packages/importer`, so the state file lands there, and file flags such as `--google-tokens` need absolute paths.
+   In the steps below, replace `npx revenuedot@0.2.0` with `revenuedot`, run from inside the clone. pnpm runs the command in `packages/importer`, so the state file lands there, and file flags such as `--google-tokens` need absolute paths.
 
 **Check:** the help text starts with `revenuedot: move a project from RevenueCat to RevenueDot.`
 
 ## Phase 2: Import the project
 
-Ask the developer to open a terminal of their own and set up the importer once per shell. First the two keys: each `read -rs` waits for the developer to paste the key, shows nothing, and keeps it out of the shell history.
-
-```bash
-read -rs REVENUECAT_API_KEY && export REVENUECAT_API_KEY
-read -rs REVENUEDOT_API_KEY && export REVENUEDOT_API_KEY
-```
-
-Then the project id and the server, which are not secret:
+Ask the developer to open a terminal of their own. The importer asks for the two secret keys itself when it starts, and hides what they type or paste, so no key goes on the command line, into a shell variable or into the chat. First the project id and the server, which are not secret:
 
 ```bash
 export REVENUECAT_PROJECT_ID=proj...
@@ -63,12 +56,12 @@ For a self-hosted server, `REVENUEDOT_URL` is its own address. The importer read
 
 1. The developer runs a dry run. It reads everything and writes nothing:
    ```bash
-   npx revenuedot@0.1.0 import --from-revenuecat --dry-run
+   npx revenuedot@0.2.0 import --from-revenuecat --dry-run
    ```
 2. Go through the report with the user. It lists the apps, products, entitlements, offerings and packages that would be created, and the customer count.
 3. The developer runs the import:
    ```bash
-   npx revenuedot@0.1.0 import --from-revenuecat
+   npx revenuedot@0.2.0 import --from-revenuecat
    ```
    - It makes about 5 requests per customer. RevenueCat allows 480 requests a minute, so expect about 90 customers a minute. On a 429 answer it waits and carries on.
    - If it stops, run the same command again. It resumes from the state file `./revenuedot-import-<project>.json`. Use `--restart` to ignore the file, and `--state <file>` to choose another file.
@@ -82,7 +75,7 @@ For a self-hosted server, `REVENUEDOT_URL` is its own address. The importer read
 
 ## Phase 3: Add store credentials, then import again
 
-1. The report's section "Store credentials to re-enter in RevenueDot" lists every app that needs them. `get-project-health` shows the same: each app with `credentials_configured: false` needs them. (`npx revenuedot@0.1.0 import plan --rc-project $REVENUECAT_PROJECT_ID`, run by the developer, prints the list with app ids.)
+1. The report's section "Store credentials to re-enter in RevenueDot" lists every app that needs them. `get-project-health` shows the same: each app with `credentials_configured: false` needs them. (`npx revenuedot@0.2.0 import plan --rc-project $REVENUECAT_PROJECT_ID`, run by the developer, prints the list with app ids.)
 2. The developer adds them in the RevenueDot dashboard: **Apps**, the app, **In-app purchase key** (App Store: the .p8 file, key ID and issuer ID) or **Service account credentials** (Google Play: the JSON file).
 3. The developer runs the import again (same command as phase 2). With credentials in place, RevenueDot asks Apple for each subscription's `original_transaction_id` and looks up Google purchase tokens by order id.
 
@@ -105,7 +98,7 @@ If the connection has no `update-app` or `get-app-store-settings` tool (some ass
 The developer runs, in the same terminal as phase 2:
 
 ```bash
-npx revenuedot@0.1.0 import verify
+npx revenuedot@0.2.0 import verify
 ```
 
 It compares, for every customer, the active entitlements, their expiry dates and the number of subscriptions that give access. It exits with code 1 when it finds a difference. Purchases made since the last import show up as differences: run the import again, then verify again. Add `--limit <n>` to check only the first n customers. To look at one customer it names, call `get-customer`.
@@ -138,8 +131,8 @@ Tell the user: with a proxy URL, the Android SDK still sends diagnostics, paywal
 
 ## Phase 7: Keep RevenueDot current, then cut over
 
-1. While older app versions still call RevenueCat, the developer re-runs the import daily (it is idempotent) and then `npx revenuedot@0.1.0 import verify`, in their own terminal as in phase 2.
-2. `npx revenuedot@0.1.0 import plan --rc-project $REVENUECAT_PROJECT_ID`, run by the developer, prints the remaining steps with the project's real app ids and URLs.
+1. While older app versions still call RevenueCat, the developer re-runs the import daily (it is idempotent) and then `npx revenuedot@0.2.0 import verify`, in their own terminal as in phase 2.
+2. `npx revenuedot@0.2.0 import plan --rc-project $REVENUECAT_PROJECT_ID`, run by the developer, prints the remaining steps with the project's real app ids and URLs.
 3. When verify shows no differences and almost all active users run the new version:
    - Remove each forwarding URL: `update-app` with the `app_id` and `notification_forward_url: ""`.
    - Create the webhooks in RevenueDot with `create-webhook-integration` (a `name` and the `url`). The response carries the signing secret once: tell the user to store it in their backend's secret settings right away.
@@ -149,4 +142,4 @@ Tell the user: with a proxy URL, the Android SDK still sends diagnostics, paywal
 
 ## Exit codes and help
 
-`revenuedot import` exits 0 on success, 1 on failure (or differences, for `verify`) and 2 on wrong usage. `npx revenuedot@0.1.0 import --help` lists every flag.
+`revenuedot import` exits 0 on success, 1 on failure (or differences, for `verify`) and 2 on wrong usage. `npx revenuedot@0.2.0 import --help` lists every flag.
