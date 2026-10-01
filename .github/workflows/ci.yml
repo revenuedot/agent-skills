@@ -1,0 +1,19 @@
+# Checks the plugin manifests, MCP configs and skills on every push and pull request.
+name: CI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with: { path: agent-skills }
+      # The test compares the tools the skills name with the real tool list.
+      - uses: actions/checkout@v5
+        with: { repository: revenuedot/mcp, path: mcp }
+      - uses: actions/setup-node@v5
+        with: { node-version: 24 }
+      - run: node --test test/plugin.test.mjs
+        working-directory: agent-skills
