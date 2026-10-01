@@ -15,6 +15,7 @@ RevenueDot is not affiliated with RevenueCat, Inc.
 - **Never read, ask for, print or pass a secret key.** That covers the RevenueDot secret key, the RevenueCat secret key and the store keys. Do RevenueDot steps with the RevenueDot MCP tools, which sign in with OAuth.
 - **The importer runs in the developer's own terminal.** `npx revenuedot@0.1.0 import` needs a RevenueCat and a RevenueDot secret key, so the developer runs those commands and types the keys there. Show the commands; do not run them yourself, and do not ask for the keys or the shell's variables. The developer can paste the report back: it contains no keys.
 - **Store credentials are entered by the developer in the dashboard.** Never ask for the .p8 file or the service account JSON in the chat.
+- **If the user pastes a key into the chat anyway,** do not repeat, store or use it. Tell them the key is now exposed: revoke it (an App Store key in App Store Connect > Users and Access > Integrations, a Google service account key in the Google Cloud console, a RevenueDot or RevenueCat secret key on that dashboard's API keys page), create a new one, and enter it in the RevenueDot dashboard.
 - **Follow the phases in order.** Each phase ends with a check. Do not start the next phase until the check passes.
 - **Do not create webhooks in RevenueDot before phase 7.** RevenueCat still sends the user's webhooks, and both systems would fire for the same purchase.
 - Ask the user for anything below that you cannot find. Do not guess ids or URLs.

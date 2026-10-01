@@ -14,6 +14,7 @@ RevenueDot is not affiliated with RevenueCat, Inc.
 
 - **Never read, ask for, print or commit a secret.** That covers the Postgres password, secret API keys, the signing key and store credentials. The developer sets them in their own terminal, in `.env` or in the dashboard. Do not open `.env` after the developer has filled it in.
 - **Use the RevenueDot MCP tools for RevenueDot steps** once phase 4 has connected them. They sign in with OAuth against the developer's own server.
+- **If the user pastes a key into the chat anyway,** do not repeat, store or use it. Tell them the key is now exposed: revoke it (an App Store key in App Store Connect > Users and Access > Integrations, a Google service account key in the Google Cloud console, a RevenueDot or RevenueCat secret key on that dashboard's API keys page), create a new one, and enter it in the RevenueDot dashboard.
 - `POSTGRES_PASSWORD` must be set before the first start. Postgres stores it in the volume on first start; changing it later needs `ALTER USER` in Postgres too.
 - Run one `revenuedot` container per database. The container runs a background job every 30 seconds (expirations, webhook sends), and two containers would both run it.
 - Run the check after each phase.
@@ -85,14 +86,14 @@ Tell the user: sign-up is open to anyone who can reach the server. A new account
 The RevenueDot MCP server works against a self-hosted server too, and the server itself is the OAuth sign-in. The developer runs it in a terminal of their own:
 
 ```bash
-npx -y @revenuedot/mcp@0.1.0 --http --port 8788 --url https://revenuedot.example.com
+npx -y @revenuedot/mcp@0.2.0 --http --port 8788 --url https://revenuedot.example.com
 ```
 
 Then connects the assistant to `http://127.0.0.1:8788/mcp`. In Claude Code: `claude mcp add --transport http revenuedot http://127.0.0.1:8788/mcp`. Connecting opens the server's own sign-in page, where the developer picks the project and **read and change** access. No key is copied anywhere: the access token is a project key the server lists under **API keys** as `OAuth: <client name>`, and revoking it there ends the connection.
 
 To serve it to a team, put it behind the reverse proxy with `--host 0.0.0.0 --public-url https://mcp.your-domain`.
 
-Version 0.1.0 of the local server has 17 tools: projects, apps (list only), the catalog, customers, granted access, webhooks and `get-import-status`. It does not have `create-app`, `verify-store-credentials`, `get-app-store-settings` or `get-project-health` yet, so phase 5 gives the dashboard step next to each of those tools.
+Version 0.2.0 of the local server has the same 38 tools as the hosted one.
 
 Backends that call the REST API need their own secret key: the developer creates it in the dashboard under **API keys** (`/projects/<project_id>/api-keys`). It is shown once. `permissions` limit what it can do; without them the key has full access to the project. The key goes in the backend's secret settings, never into the chat or a committed file.
 

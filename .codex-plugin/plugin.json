@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "revenuedot",
-  "version": "0.1.3",
-  "description": "Run your app's in-app subscriptions from chat: set up products and offerings, look up customers, grant or extend access, check webhooks and revenue.",
+  "version": "0.1.4",
+  "description": "Manage your mobile app's subscriptions and in-app purchases from chat: check MRR, look up customers, grant or extend access, set up plans and paywall offerings, and fix App Store and Google Play issues.",
   "author": {
     "name": "RevenueDot",
     "email": "support@revenuedot.app",
@@ -25,10 +25,10 @@
     "com.openai": {
       "interface": {
         "displayName": "RevenueDot",
-        "shortDescription": "Run subscriptions from chat",
-        "longDescription": "RevenueDot is an open-source backend for in-app purchases. Connect your project to set up products, entitlements and offerings; find a customer by email or app user id and see why they lost access; grant or extend access; cancel with your confirmation; check that Apple and Google are connected; debug failed webhooks; and read revenue numbers. It never asks for store keys or passwords.",
+        "shortDescription": "Run mobile app subscriptions",
+        "longDescription": "Manage your iOS and Android app's subscriptions and in-app purchases from chat. Connect your RevenueDot project to check MRR and revenue, find a customer by email or app user id and see why they lost access, grant or extend access, cancel with your confirmation, set up plans and paywall offerings, and fix App Store, Google Play and webhook problems. RevenueDot is an open-source subscription backend for mobile apps. It never asks for store keys or passwords.",
         "developerName": "RevenueDot",
-        "category": "Productivity",
+        "category": "Developer Tools",
         "capabilities": [
           "Read",
           "Write"
