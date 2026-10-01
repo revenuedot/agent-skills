@@ -34,7 +34,7 @@ OpenAI's submission asks why each tool sets `readOnlyHint`, `destructiveHint` an
 | `create-test-purchase` | false | false | true | Simulates a purchase in the project's Test Store only (never Apple or Google); the resulting events are sent to the owner's webhooks, an external system. Needs the Money actions approval. |
 | `revoke-customer-entitlement` | false | true | false | Ends access that was granted; the user cannot get it back without granting again. |
 | `delete-customer` | false | true | false | Permanently deletes a customer's data for a data-deletion request; the assistant must ask for confirmation first. |
-| `archive-offering` | false | true | false | Hides an offering from apps; it can be restored in the dashboard. Marked destructive because apps stop showing it. |
+| `archive-offering` | false | true | true | Hides an offering from customers' apps, which RevenueDot does not control, so it is open world; it can be restored in the dashboard. Marked destructive because apps stop showing it. |
 | `delete-webhook-integration` | false | true | false | Deletes a webhook and its delivery history. |
 | `cancel-subscription` | false | true | true | Stops a subscription renewing in Google's system; the customer loses access at period end. Needs the Money actions approval and a confirmation. |
 | `refund-subscription` | false | true | true | Refunds through Google and ends access. Not offered to ChatGPT; offered in Claude and with an API key, behind the Money actions approval and a confirmation. |
