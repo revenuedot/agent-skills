@@ -155,7 +155,7 @@ Tell the user: with a proxy URL, the Android SDK still sends diagnostics, paywal
 1. While older app versions still call RevenueCat, re-run the import daily (it is idempotent) and then `npx revenuedot import verify`.
 2. `npx revenuedot import plan --rc-project $REVENUECAT_PROJECT_ID` prints the remaining steps with the project's real app ids and URLs.
 3. When verify shows no differences and almost all active users run the new version:
-   - Remove each forwarding URL: `POST /v2/projects/<project_id>/apps/<app_id>` with `{"app_store":{"notification_forward_url":null}}` (or `FORWARD_URL= bash forward-notifications.sh`).
+   - Remove each forwarding URL: `POST /v2/projects/<project_id>/apps/<app_id>` with `{"app_store":{"notification_forward_url":null}}`.
    - Create the webhooks in RevenueDot: `POST /v2/projects/<project_id>/integrations/webhooks` with `{"name":"...","url":"https://..."}`. The response carries the signing secret once. With the RevenueDot MCP server, use `create-webhook-integration`.
    - Turn off the webhooks in RevenueCat, then RevenueCat itself.
 
