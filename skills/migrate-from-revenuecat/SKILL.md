@@ -98,16 +98,17 @@ returns `"status":"valid"`. `import/status` shows `needs_token_refresh` at or ne
      "$REVENUEDOT_URL/v2/projects/<project_id>/apps/<app_id>" -d '{"app_store":{"track_new_purchases":true}}'
    ```
    Use `"play_store"` instead of `"app_store"` for a Google Play app.
-2. **App Store.** Ask the user for the App Store notification URL RevenueCat gave them (RevenueCat app settings). Set it as the forwarding URL with the script from the examples repo:
+2. **App Store.** Ask the user for the App Store notification URL RevenueCat gave them (RevenueCat app settings). Set it as the forwarding URL, then read the URL to give Apple:
    ```bash
-   curl -fsSLO https://raw.githubusercontent.com/revenuedot/examples/main/migrate-from-revenuecat/forward-notifications.sh
-   RD_URL=$REVENUEDOT_URL RD_KEY=$REVENUEDOT_API_KEY PROJECT=<project_id> APP=<app_id> \
-   FORWARD_URL='<RevenueCat App Store notification URL>' bash forward-notifications.sh
+   curl -s -X POST -H "Authorization: Bearer $REVENUEDOT_API_KEY" -H "content-type: application/json" \
+     "$REVENUEDOT_URL/v2/projects/<project_id>/apps/<app_id>" \
+     -d '{"app_store":{"notification_forward_url":"<RevenueCat App Store notification URL>"}}'
+   curl -s -H "Authorization: Bearer $REVENUEDOT_API_KEY" "$REVENUEDOT_URL/v2/projects/<project_id>/apps/<app_id>/store_settings"
    ```
-   It needs `curl` and `jq`, and prints `notification_url`. The user pastes that URL into App Store Connect > App Information > App Store Server Notifications, for both **Production** and **Sandbox**. It has the form `$REVENUEDOT_URL/v1/notifications/apple/<app_id>`. RevenueDot stores each notification, applies it, and copies the exact body to RevenueCat.
+   The second call prints `notification_url`. An empty `notification_forward_url` turns forwarding off. The user pastes that URL into App Store Connect > App Information > App Store Server Notifications, for both **Production** and **Sandbox**. It has the form `$REVENUEDOT_URL/v1/notifications/apple/<app_id>`. RevenueDot stores each notification, applies it, and copies the exact body to RevenueCat.
 3. **Google Play.** The notification URL is `$REVENUEDOT_URL/v1/notifications/google/<app_id>`.
    - If the Pub/Sub topic set in Play Console > Monetization setup is in the user's own Google Cloud project, add a second **push** subscription to that topic pointing at this URL. RevenueCat's own subscription keeps receiving every message; no forwarding is needed.
-   - Otherwise, run `forward-notifications.sh` for the Play app with RevenueCat's Google notification URL, and point the topic's push subscription at RevenueDot.
+   - Otherwise, set `notification_forward_url` the same way for the Play app (with `"play_store"` instead of `"app_store"`) to RevenueCat's Google notification URL, and point the topic's push subscription at RevenueDot.
 
 **Check:** for each app,
 ```bash
