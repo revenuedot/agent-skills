@@ -2,6 +2,8 @@
 
 **The RevenueDot plugin for ChatGPT, Codex and Claude: the hosted connector (34 tools) plus skills that teach agents to set up RevenueDot, migrate from RevenueCat and handle support tickets.**
 
+[![Watch the 87-second demo of RevenueDot in ChatGPT](https://revenuedot.app/videos/revenuedot-chatgpt-demo.webp)](https://revenuedot.app/videos/revenuedot-chatgpt-demo.mp4)
+
 | Where | Install |
 |---|---|
 | Claude Code or Claude Desktop | `/plugin marketplace add revenuedot/agent-skills`, then `/plugin install revenuedot@revenuedot` |
