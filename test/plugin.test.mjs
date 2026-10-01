@@ -76,8 +76,8 @@ test("every MCP tool a skill names exists in revenuedot/mcp", () => {
   const src = resolve(root, "../mcp/src/tools.ts");
   if (!existsSync(src)) return; // the mcp repo is not checked out next to this one
   const real = new Set([...readFileSync(src, "utf8").matchAll(/name: "([a-z]+(?:-[a-z]+)+)"/g)].map((m) => m[1]));
-  assert.ok(real.size >= 34);
-  const toolLike = /`((?:list|get|create|attach|grant|revoke|set|delete|extend|cancel|refund|archive|retry|send|verify)-[a-z-]+)`/g;
+  assert.ok(real.size >= 38);
+  const toolLike = /`((?:list|get|create|attach|grant|revoke|set|delete|extend|cancel|refund|archive|retry|send|verify|update)-[a-z-]+)`/g;
   for (const s of skills) {
     for (const m of read(`skills/${s}/SKILL.md`).matchAll(toolLike)) assert.ok(real.has(m[1]), `${s} names ${m[1]}, which is not a tool`);
   }
@@ -90,6 +90,21 @@ test("every tool has an annotation justification, and none is left over", () => 
   const doc = read("submission/annotation-justifications.md");
   const documented = [...doc.matchAll(/^\| `([a-z-]+)` \|/gm)].map((m) => m[1]);
   assert.deepEqual([...documented].sort(), [...real].sort());
+});
+
+test("no skill reads, exports or sends a secret key: RevenueDot steps go through the MCP tools", () => {
+  const credVar = /\b[A-Z0-9_]*(API_KEY|SECRET|TOKEN|PASSWORD|SIGNING_KEY|PRIVATE_KEY)\b/;
+  for (const s of skills) {
+    const lines = read(`skills/${s}/SKILL.md`).split("\n");
+    lines.forEach((line, i) => {
+      const where = `${s}/SKILL.md:${i + 1}`;
+      assert.doesNotMatch(line, /Authorization: Bearer|-H ["']Authorization/i, `${where} sends a key in a header`);
+      assert.doesNotMatch(line, /\$\{?[A-Z0-9_]*(API_KEY|SECRET|TOKEN|PASSWORD)\b/, `${where} expands a secret variable`);
+      assert.doesNotMatch(line, /\bsk_[A-Za-z0-9]{6,}/, `${where} holds a secret key`);
+      assert.doesNotMatch(line, /(export|-e)\s+[A-Z0-9_]*(API_KEY|SECRET|TOKEN|PASSWORD)=/, `${where} puts a secret in a variable`);
+      if (credVar.test(line)) assert.doesNotMatch(line, /https?:\/\//, `${where} puts a credential-named variable beside a URL`);
+    });
+  }
 });
 
 test("the upload ZIP holds only what OpenAI accepts", () => {

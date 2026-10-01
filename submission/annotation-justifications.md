@@ -18,7 +18,11 @@ OpenAI's submission asks why each tool sets `readOnlyHint`, `destructiveHint` an
 | `list-webhook-integrations` | true | false | false | Reads the project's webhook settings (no secrets). |
 | `list-webhook-deliveries` | true | false | false | Reads delivery attempts of one webhook. |
 | `get-import-status` | true | false | false | Reads counts after a data import. |
+| `list-public-api-keys` | true | false | false | Reads an app's public SDK key, which ships inside the app and cannot change anything. Not in the ChatGPT profile yet. |
+| `get-app-store-settings` | true | false | false | Reads an app's notification URL, forward URL and last notification. Credentials appear only as configured or not; no key, key id or account is returned. Not in the ChatGPT profile yet. |
 | `verify-store-credentials` | true | false | true | Calls Apple or Google once with the key already saved in the project to say whether it works; it changes nothing and accepts no key. The only tool that reaches another service. |
+| `create-app` | false | false | false | Adds an app record (Test Store, App Store bundle id or Google Play package name); it takes no credentials. Not in the ChatGPT profile yet. |
+| `update-app` | false | false | true | Changes an app's name, forward URL and track-new-purchases setting; each can be set back, so it is not destructive, and the same call twice gives the same result. A forward URL makes RevenueDot copy store notifications to that outside URL, so it is open world. It takes no credentials. Not in the ChatGPT profile yet. |
 | `create-product` | false | false | false | Adds a product record; nothing is removed or overwritten. |
 | `create-entitlement` | false | false | false | Adds an entitlement record. |
 | `create-offering` | false | false | true | Adds an offering. Setting it current changes what customers' apps show, which RevenueDot does not control, so it is open world. |

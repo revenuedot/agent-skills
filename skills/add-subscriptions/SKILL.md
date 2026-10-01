@@ -6,110 +6,64 @@ license: MIT
 
 # Add subscriptions to an app with RevenueDot
 
-RevenueDot is an open-source backend for in-app purchases that speaks RevenueCat's API. Apps use the RevenueCat SDK, pointed at a RevenueDot server with a proxy URL. The steps below set up one `pro` entitlement sold as monthly and yearly subscriptions.
+RevenueDot is an open-source backend for in-app purchases that speaks RevenueCat's API. Apps use the RevenueCat SDK, pointed at a RevenueDot server with a proxy URL. The steps below set up one `pro` entitlement sold as monthly and yearly subscriptions, using the RevenueDot MCP tools.
 
 RevenueDot is not affiliated with RevenueCat, Inc.
 
 ## Rules for the agent
 
-- **The secret key (`sk_...`) never goes into the app** or into committed files. Only the public app key (`test_`, `appl_`, `goog_`) goes into the app.
+- **Do every RevenueDot step with the RevenueDot MCP tools.** They sign in with OAuth, so you never need a secret key. Do not ask the user for a secret key (`sk_...`), and do not call the REST API with one.
+- **Store credentials are entered by the user in the dashboard.** Never ask the user to paste an App Store key or a Google service account into the chat.
+- Only the public SDK key (`test_`, `appl_`, `goog_`) goes into the app. It is public and ships inside the app.
 - Ask the user for the product ids they created (or will create) in App Store Connect and Play Console. Store product ids must match exactly.
 - Run the check at the end of each phase before moving on.
 
 ## What you need
 
-1. A RevenueDot server URL, served at the root of its host (the SDKs drop any path). For RevenueDot Cloud it is `https://api.revenuedot.app` (sign up at https://app.revenuedot.app, free plan). To run your own server, use the `self-host` skill.
-2. A RevenueDot secret key (`sk_...`): dashboard, **API keys** page.
+1. **The RevenueDot connector connected.** In Claude, that is the RevenueDot connector or this plugin's MCP server, `https://mcp.revenuedot.app/claude/mcp`. Other clients use `https://mcp.revenuedot.app/mcp`. Connecting opens a RevenueDot sign-in (OAuth): the user picks the project and **read and change** access. There is nothing to paste.
+2. A RevenueDot account. For RevenueDot Cloud, sign up at https://app.revenuedot.app (free plan); the SDK's proxy URL is `https://api.revenuedot.app`. To run your own server, use the `self-host` skill first.
 3. The app's bundle id (iOS) and package name (Android).
 
-```bash
-export REVENUEDOT_URL=https://revenuedot.example.com
-export REVENUEDOT_API_KEY=sk_...
-PROJECT=$(curl -s -H "Authorization: Bearer $REVENUEDOT_API_KEY" "$REVENUEDOT_URL/v2/projects" | jq -r '.items[0].id')
-```
+Every tool takes an optional `project_id`. Leave it out: the connection has one project.
 
-A secret key belongs to one project, so `GET /v2/projects` returns exactly that project.
+## Phase 1: Check the connection
 
-## Phase 1: Connect the MCP server (optional)
-
-The RevenueDot MCP server lets you create the catalog with tools instead of curl. For RevenueDot Cloud, connect the hosted server. In Claude Code:
-
-```bash
-claude mcp add --transport http revenuedot https://mcp.revenuedot.app/mcp
-```
-
-The client signs in with OAuth, or send `Authorization: Bearer sk_...`. For a self-hosted server, run the MCP server locally over stdio with `REVENUEDOT_URL` and `REVENUEDOT_API_KEY` set (`REVENUEDOT_URL` defaults to `https://api.revenuedot.app`).:
-
-```bash
-claude mcp add revenuedot -e REVENUEDOT_API_KEY=sk_... -e REVENUEDOT_URL=https://revenuedot.example.com -- npx -y @revenuedot/mcp
-```
-
-Self-hosters can also serve HTTP themselves with `npx -y @revenuedot/mcp --http --port 8788 --url https://their-server`.
-
-Every tool takes an optional `project_id`, which defaults to the key's only project.
+Call `list-projects`. If the tools are missing, ask the user to connect the RevenueDot connector (Claude: Settings > Connectors, or `/mcp` in Claude Code) and sign in.
 
 **Check:** `list-projects` returns the project.
 
 ## Phase 2: Create the apps
 
-One app per store. The MCP server has no tool to create apps, so use the REST API (or the dashboard's **Apps** page):
+One app per store, with `create-app`:
 
-```bash
-H=(-H "Authorization: Bearer $REVENUEDOT_API_KEY" -H "content-type: application/json")
-curl -s "${H[@]}" -X POST "$REVENUEDOT_URL/v2/projects/$PROJECT/apps" -d '{"name":"Test Store","type":"test_store"}'
-curl -s "${H[@]}" -X POST "$REVENUEDOT_URL/v2/projects/$PROJECT/apps" -d '{"name":"MyApp (iOS)","type":"app_store","app_store":{"bundle_id":"com.example.myapp"}}'
-curl -s "${H[@]}" -X POST "$REVENUEDOT_URL/v2/projects/$PROJECT/apps" -d '{"name":"MyApp (Android)","type":"play_store","play_store":{"package_name":"com.example.myapp"}}'
-```
+1. `type: "test_store"`, `name: "Test Store"`. It lets you buy without any App Store or Google Play account. Its key only works in debug builds.
+2. `type: "app_store"`, `name: "MyApp (iOS)"`, `bundle_id: "com.example.myapp"`.
+3. `type: "play_store"`, `name: "MyApp (Android)"`, `package_name: "com.example.myapp"`.
 
-- The Test Store app lets you buy without any App Store or Google Play account. Its key only works in debug builds.
-- Real store purchases also need store credentials on each app (App Store In-App Purchase key; Google Play service account) and store notifications. The `self-host` skill, phase 5, has the steps.
+If the connection has no `create-app` tool (some assistants offer fewer tools), ask the user to add the apps in the dashboard under **Apps**.
 
-**Check:** `list-apps` (or `GET /v2/projects/$PROJECT/apps`) lists the apps. Save each app `id`.
+Real store purchases also need, per store app:
+- **Credentials.** The user enters them in the dashboard (Apps > the app): the App Store In-App Purchase key (.p8 file, key ID, issuer ID), or a Google Play service account JSON with the "View financial data" permission. Then call `verify-store-credentials` with the `app_id`; it answers `"status":"valid"` when Apple or Google accept them.
+- **Store notifications.** `get-app-store-settings` with the `app_id` returns `notification_url`. The user pastes it into App Store Connect > App Information > App Store Server Notifications (Production and Sandbox), or adds it as a **push** subscription to the Pub/Sub topic set in Play Console > Monetization setup.
+
+**Check:** `list-apps` lists the apps. Note each app `id`.
 
 ## Phase 3: Create the catalog
 
-Create each product once per app, with the same store identifier the store uses. With MCP tools, or with the REST calls shown:
+Create each product once per app, with the same store identifier the store uses:
 
-1. **Products** (`create-product`), per app:
-   ```bash
-   curl -s "${H[@]}" -X POST "$REVENUEDOT_URL/v2/projects/$PROJECT/products" \
-     -d '{"store_identifier":"pro_monthly","app_id":"<app_id>","type":"subscription","display_name":"Pro monthly","subscription":{"duration":"P1M"}}'
-   ```
-   Repeat for `pro_annual` with `"duration":"P1Y"`. `type` is one of `subscription`, `one_time`, `consumable`, `non_consumable`, `non_renewing_subscription`. For Test Store products the duration sets the subscription period.
-2. **Entitlement** (`create-entitlement`), then attach every product (`attach-products-to-entitlement`):
-   ```bash
-   curl -s "${H[@]}" -X POST "$REVENUEDOT_URL/v2/projects/$PROJECT/entitlements" -d '{"lookup_key":"pro","display_name":"Pro access"}'
-   curl -s "${H[@]}" -X POST "$REVENUEDOT_URL/v2/projects/$PROJECT/entitlements/<entitlement_id>/actions/attach_products" \
-     -d '{"product_ids":["<product_id>","<product_id>"]}'
-   ```
-3. **Offering** (`create-offering`), made current:
-   ```bash
-   curl -s "${H[@]}" -X POST "$REVENUEDOT_URL/v2/projects/$PROJECT/offerings" -d '{"lookup_key":"default","display_name":"Standard plans"}'
-   curl -s "${H[@]}" -X POST "$REVENUEDOT_URL/v2/projects/$PROJECT/offerings/<offering_id>" -d '{"is_current":true}'
-   ```
-4. **Packages** (`create-packages`), then attach one product per app to each (`attach-products-to-package`):
-   ```bash
-   curl -s "${H[@]}" -X POST "$REVENUEDOT_URL/v2/projects/$PROJECT/offerings/<offering_id>/packages" -d '{"lookup_key":"$rc_monthly","display_name":"Monthly","position":0}'
-   curl -s "${H[@]}" -X POST "$REVENUEDOT_URL/v2/projects/$PROJECT/packages/<package_id>/actions/attach_products" \
-     -d '{"products":[{"product_id":"<product_id>","eligibility_criteria":"all"}]}'
-   ```
-   Use `$rc_annual` (position 1) for the yearly package.
+1. **Products:** `create-product` per app, with `app_id`, `store_identifier: "pro_monthly"`, `type: "subscription"`, `display_name: "Pro monthly"` and `subscription_duration: "P1M"`. Repeat for `pro_annual` with `"P1Y"`. `type` is one of `subscription`, `one_time`, `consumable`, `non_consumable`, `non_renewing_subscription`. For Test Store products the duration sets the subscription period.
+2. **Entitlement:** `create-entitlement` with `lookup_key: "pro"` and `display_name: "Pro access"`. Then `attach-products-to-entitlement` with `entitlement_id: "pro"` and every product id from step 1.
+3. **Offering:** `create-offering` with `lookup_key: "default"`, `display_name: "Standard plans"` and `is_current: true`.
+4. **Packages:** `create-packages` with the offering id, `lookup_key: "$rc_monthly"`, `display_name: "Monthly"` and `position: 0`; again with `$rc_annual`, `"Annual"` and `position: 1`. Then `attach-products-to-package` for each package, with one product per app (the Test Store, iOS and Android monthly products in `$rc_monthly`).
 
-A full working script that does phases 2 and 3 for a Test Store app: https://github.com/revenuedot/examples/blob/main/selfhost/docker-compose/seed.sh
+**Check:** `list-offerings` shows `default` with `is_current: true`, and each package lists one product per app.
 
-**Check:** ask for offerings the way the SDK does, with the app's public key (phase 4 shows where to find it):
-```bash
-curl -s -H "Authorization: Bearer <test_ key>" "$REVENUEDOT_URL/v1/subscribers/user_1/offerings"
-```
-The answer has `"current_offering_id":"default"` and the packages with their `platform_product_identifier`.
+## Phase 4: Get the public SDK keys
 
-## Phase 4: Get the public app keys
+Call `list-public-api-keys` with each `app_id`. `items[0].key` is the key: `test_...` for the Test Store app, `appl_...` for iOS, `goog_...` for Android. Without that tool, the user copies the key from the app's page in the dashboard.
 
-```bash
-curl -s "${H[@]}" "$REVENUEDOT_URL/v2/projects/$PROJECT/apps/<app_id>/public_api_keys" | jq -r '.items[0].key'
-```
-
-Or copy it from the app's dashboard page. `test_...` is for the Test Store app, `appl_...` for iOS, `goog_...` for Android.
+`get-app-store-settings` returns `api_origin`: the server's public URL, which is the SDK's proxy URL. For RevenueDot Cloud it is `https://api.revenuedot.app`.
 
 **Check:** you have one key per app.
 
@@ -186,26 +140,17 @@ Complete paywall screens per platform: https://github.com/revenuedot/examples/tr
 
 1. Configure the app with the `test_` key in a **debug** build. Release builds with a `test_` key stop on purpose.
 2. Tap a package, then **Test valid purchase** in the Test Store dialog.
-3. Confirm on the server:
-   ```bash
-   curl -s "${H[@]}" "$REVENUEDOT_URL/v2/projects/$PROJECT/customers/<app_user_id>/active_entitlements"
-   ```
-   Or use the MCP tool `get-customer`.
-4. To test lifecycles without an app, simulate one on the server:
-   ```bash
-   curl -s "${H[@]}" -X POST "$REVENUEDOT_URL/v2/projects/$PROJECT/test_purchases" \
-     -d '{"app_user_id":"user_1","product_id":"pro_monthly","scenario":"trial"}'
-   ```
-   `scenario` is one of `purchase`, `trial`, `trial_conversion`, `renewal`, `cancel`, `billing_issue`, `refund`, `expire`. `offset_days` starts it in the past.
-5. To unlock `pro` for a tester without a purchase, use the MCP tool `grant-customer-entitlement` (and `revoke-customer-entitlement` to undo).
+3. Confirm on the server: `get-customer` with the app user id shows `pro` in `active_entitlements`.
+4. To test lifecycles without an app, call `create-test-purchase` with `app_user_id`, `product_id` (the product id or the Test Store store identifier, such as `pro_monthly`) and `scenario`. `scenario` is one of `purchase`, `trial`, `trial_conversion`, `renewal`, `cancel`, `billing_issue`, `refund`, `expire`. `offset_days` starts it in the past.
+5. To unlock `pro` for a tester without a purchase, use `grant-customer-entitlement` (and `revoke-customer-entitlement` to undo).
 
-**Check:** the app shows `pro` active, and the REST call lists the `pro` entitlement id with an `expires_at` about one period ahead.
+**Check:** the app shows `pro` active, and `get-customer` lists the `pro` entitlement with an `expires_at` about one period ahead.
 
 Known limits today:
-- Test Store products show $0.00 unless the product has a price. Add `"test_store_price":{"amount_micros":9990000,"currency":"USD"}` to the product's create (or update) body for a $9.99 price. Each Test Store product has one price.
+- Test Store products show $0.00 unless the product has a price. The user sets it in the dashboard: **Products**, the product, **Test Store price** (for example 9.99 USD). Each Test Store product has one price.
 - In Expo Go and on the web, `react-native-purchases` only accepts `test_` and `rcb_` keys. Real store purchases need a development build (`npx expo run:ios` / `npx expo run:android`).
 
 ## Next
 
-- Send purchase events to the user's backend: MCP `create-webhook-integration`, or `POST /v2/projects/$PROJECT/integrations/webhooks` with `{"name":"...","url":"https://..."}`. The signing secret is returned once.
+- Send purchase events to the user's backend: `create-webhook-integration` with a `name` and the backend's `url`. The signing secret is returned once: tell the user to store it in their backend's secret settings right away.
 - Moving an app that already uses RevenueCat: use the `migrate-from-revenuecat` skill.

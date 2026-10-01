@@ -1,6 +1,6 @@
 # RevenueDot plugin and agent skills
 
-**The RevenueDot plugin for ChatGPT, Codex and Claude: the hosted connector (34 tools) plus skills that teach agents to set up RevenueDot, migrate from RevenueCat and handle support tickets.**
+**The RevenueDot plugin for ChatGPT, Codex and Claude: the hosted connector (38 tools in Claude and Codex, 33 in ChatGPT) plus skills that teach agents to set up RevenueDot, migrate from RevenueCat and handle support tickets.**
 
 [![Watch the 87-second demo of RevenueDot in ChatGPT](https://revenuedot.app/videos/revenuedot-chatgpt-demo.webp)](https://revenuedot.app/videos/revenuedot-chatgpt-demo.mp4)
 
@@ -22,9 +22,9 @@ Connecting asks you to sign in to RevenueDot, pick one project and choose read o
 | [`add-subscriptions`](skills/add-subscriptions/SKILL.md) | You want subscriptions and a paywall in an iOS, Android, React Native or Flutter app: create the catalog, configure the SDK, gate on an entitlement, test with the Test Store |
 | [`support-playbook`](skills/support-playbook/SKILL.md) | You answer a subscription ticket: find the customer, explain why they have or lack access, then grant, extend, cancel or refund (money actions only after your yes) |
 | [`weekly-revenue-check`](skills/weekly-revenue-check/SKILL.md) | You want a five-line health and revenue report: store connections, failed webhooks, billing problems, MRR |
-| [`self-host`](skills/self-host/SKILL.md) | You want to run RevenueDot yourself with Docker and Postgres: first account, secret key, store notifications, backups and upgrades |
+| [`self-host`](skills/self-host/SKILL.md) | You want to run RevenueDot yourself with Docker and Postgres: first account, connecting an assistant, store notifications, backups and upgrades |
 
-The skills work with RevenueDot Cloud (sign up at https://app.revenuedot.app; API `https://api.revenuedot.app`) or a self-hosted server. They work best with the RevenueDot MCP server connected: the hosted one at `https://mcp.revenuedot.app/mcp` (OAuth or a secret key), or a local one from [revenuedot/mcp](https://github.com/revenuedot/mcp). The local MCP server is on npm as [`@revenuedot/mcp`](https://www.npmjs.com/package/@revenuedot/mcp) and the importer CLI as [`revenuedot`](https://www.npmjs.com/package/revenuedot).
+The skills work with RevenueDot Cloud (sign up at https://app.revenuedot.app; API `https://api.revenuedot.app`) or a self-hosted server. They do every RevenueDot step through the RevenueDot MCP server, which signs in with OAuth, so no skill reads or sends a secret key. The plugin connects the hosted server (`https://mcp.revenuedot.app/claude/mcp` in Claude); a self-hosted server runs a local one from [revenuedot/mcp](https://github.com/revenuedot/mcp). The importer that copies a project from RevenueCat needs secret keys, so the migration skill has the developer run it in their own terminal. The local MCP server is on npm as [`@revenuedot/mcp`](https://www.npmjs.com/package/@revenuedot/mcp) and the importer CLI as [`revenuedot`](https://www.npmjs.com/package/revenuedot).
 
 Each skill names the known gaps it depends on.
 

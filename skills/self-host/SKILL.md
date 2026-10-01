@@ -1,6 +1,6 @@
 ---
 name: self-host
-description: Use this skill when the user wants to run their own RevenueDot server with Docker and Postgres, create the first account and secret key, connect App Store and Google Play notifications, or back up and upgrade a self-hosted RevenueDot.
+description: Use this skill when the user wants to run their own RevenueDot server with Docker and Postgres, create the first account, connect an AI assistant and App Store and Google Play notifications, or back up and upgrade a self-hosted RevenueDot.
 license: MIT
 ---
 
@@ -12,8 +12,9 @@ RevenueDot is not affiliated with RevenueCat, Inc.
 
 ## Rules for the agent
 
-- **Never commit `.env`, secret keys (`sk_...`) or store credentials.**
-- Set `POSTGRES_PASSWORD` before the first start. Postgres stores it in the volume on first start; changing it later needs `ALTER USER` in Postgres too.
+- **Never read, ask for, print or commit a secret.** That covers the Postgres password, secret API keys, the signing key and store credentials. The developer sets them in their own terminal, in `.env` or in the dashboard. Do not open `.env` after the developer has filled it in.
+- **Use the RevenueDot MCP tools for RevenueDot steps** once phase 4 has connected them. They sign in with OAuth against the developer's own server.
+- `POSTGRES_PASSWORD` must be set before the first start. Postgres stores it in the volume on first start; changing it later needs `ALTER USER` in Postgres too.
 - Run one `revenuedot` container per database. The container runs a background job every 30 seconds (expirations, webhook sends), and two containers would both run it.
 - Run the check after each phase.
 
@@ -24,7 +25,12 @@ Needs Docker with Compose v2, `git`, `curl` and `jq`.
 ```bash
 git clone https://github.com/revenuedot/examples.git
 cd examples/selfhost/docker-compose
-cp .env.example .env            # then set POSTGRES_PASSWORD to a long random value
+cp .env.example .env
+```
+
+The developer opens `.env` and replaces `change-me` in `POSTGRES_PASSWORD` with a long random value. Then:
+
+```bash
 docker compose up -d            # builds the image from https://github.com/revenuedot/revenuedot.git#main
 ```
 
@@ -47,7 +53,7 @@ Inside the container the server reads:
 
 App Store and Google Play credentials are not environment variables. They belong to each app (phase 5).
 
-The monorepo also has a `docker-compose.yml` at the root of https://github.com/revenuedot/revenuedot that builds from the checkout (`build: .`). Its Postgres password falls back to `revenuedot` when `POSTGRES_PASSWORD` is unset, so always set it there.
+The `revenuedot/revenuedot` monorepo also has a `docker-compose.yml` at its root that builds from the checkout (`build: .`). Its Postgres password falls back to `revenuedot` when it is unset, so always set it there too.
 
 **Check:**
 ```bash
@@ -67,63 +73,52 @@ The stores and phones must reach the server over HTTPS.
 
 ## Phase 3: Create the first account and project
 
-1. Open `https://revenuedot.example.com/signup` and create an account. Sign-up creates the account and its first project. The dashboard is at `/login`; the bare `/` returns a small JSON document.
-2. From a script instead:
-   ```bash
-   curl -s -c cookies.txt -X POST https://revenuedot.example.com/auth/signup -H 'content-type: application/json' \
-     -d '{"email":"you@example.com","password":"at-least-8-characters","project_name":"My app"}'
-   ```
-   It returns `{"ok":true}` with status 201 and a session cookie.
+1. The developer opens `https://revenuedot.example.com/signup` and creates an account. Sign-up creates the account and its first project. The dashboard is at `/login`; the bare `/` returns a small JSON document.
+2. For a local trial instead, `seed.sh` in the same folder signs up a development account and adds a Test Store app, a `pro` entitlement and a `default` offering. The developer runs `./seed.sh` (it reads `RD_URL`, `RD_EMAIL` and `RD_PASSWORD` when set).
 
 Tell the user: sign-up is open to anyone who can reach the server. A new account only sees its own project, but restrict `/signup` and `/auth/signup` at the reverse proxy after the first account if they do not want strangers creating accounts.
 
-For a local trial, `seed.sh` in the same folder does phases 3 and 4 and adds a Test Store app, a `pro` entitlement and a `default` offering: `./seed.sh` (or `RD_URL=... RD_EMAIL=... RD_PASSWORD=... ./seed.sh`).
+**Check:** the dashboard opens on the new project.
 
-**Check:** `curl -s -b cookies.txt https://revenuedot.example.com/auth/me` lists the user and `projects[0].id`.
+## Phase 4: Connect an AI assistant
 
-## Phase 4: Create a secret key
+The RevenueDot MCP server works against a self-hosted server too, and the server itself is the OAuth sign-in. The developer runs it in a terminal of their own:
 
-1. Dashboard: **API keys** page (`/projects/<project_id>/api-keys`), create a secret key. It is shown once.
-2. From a script, with the session cookie from phase 3:
-   ```bash
-   PROJECT=$(curl -s -b cookies.txt https://revenuedot.example.com/auth/me | jq -r '.projects[0].id')
-   curl -s -b cookies.txt -X POST "https://revenuedot.example.com/v2/projects/$PROJECT/api_keys" \
-     -H 'content-type: application/json' -d '{"name":"backend"}' | jq -r .key
-   ```
-   `permissions` is optional; without it the key has full access to the project.
-
-**Check:** `curl -s -H "Authorization: Bearer sk_..." https://revenuedot.example.com/v2/projects` returns the project.
-
-To manage the server from an agent, connect the MCP server to it:
 ```bash
-claude mcp add revenuedot -e REVENUEDOT_API_KEY=sk_... -e REVENUEDOT_URL=https://revenuedot.example.com -- npx -y @revenuedot/mcp
+npx -y @revenuedot/mcp --http --port 8788 --url https://revenuedot.example.com
 ```
-Or serve it over HTTP yourself: `npx -y @revenuedot/mcp --http --port 8788 --url https://revenuedot.example.com`.
+
+Then connects the assistant to `http://127.0.0.1:8788/mcp`. In Claude Code: `claude mcp add --transport http revenuedot http://127.0.0.1:8788/mcp`. Connecting opens the server's own sign-in page, where the developer picks the project and **read and change** access. No key is copied anywhere: the access token is a project key the server lists under **API keys** as `OAuth: <client name>`, and revoking it there ends the connection.
+
+To serve it to a team, put it behind the reverse proxy with `--host 0.0.0.0 --public-url https://mcp.your-domain`.
+
+Backends that call the REST API need their own secret key: the developer creates it in the dashboard under **API keys** (`/projects/<project_id>/api-keys`). It is shown once. `permissions` limit what it can do; without them the key has full access to the project. The key goes in the backend's secret settings, never into the chat or a committed file.
+
+**Check:** `list-projects` returns the project.
 
 ## Phase 5: Connect the stores
 
-Create an app per store (dashboard **Apps**, or `POST /v2/projects/<project_id>/apps` with `{"name":"...","type":"app_store","app_store":{"bundle_id":"..."}}`; for Android `"type":"play_store","play_store":{"package_name":"..."}`). Then, per app:
+Create an app per store with `create-app`: `type: "app_store"` with `bundle_id`, or `type: "play_store"` with `package_name` (or in the dashboard under **Apps**). Then, per app:
 
-1. **Credentials**, in the dashboard (Apps > the app) or with `POST /v2/projects/<project_id>/apps/<app_id>`:
-   - App Store: `{"app_store":{"subscription_private_key":"<.p8 contents>","subscription_key_id":"...","subscription_key_issuer":"..."}}` (the In-App Purchase key from App Store Connect).
-   - Google Play: `{"play_store":{"play_service_account_credentials_json":"<JSON>"}}` (a service account with the "View financial data" permission).
-   Check them: `POST /v2/projects/<project_id>/apps/<app_id>/actions/verify_credentials` with `{}` returns `"status":"valid"`.
-2. **Notification URLs:**
-   - App Store: `https://revenuedot.example.com/v1/notifications/apple/<app_id>`. Paste it into App Store Connect > App Information > App Store Server Notifications, for Production and Sandbox.
-   - Google Play: `https://revenuedot.example.com/v1/notifications/google/<app_id>`. In Google Cloud > Pub/Sub, open the topic set in Play Console > Monetization setup and add a **push** subscription to this URL.
-   `GET /v2/projects/<project_id>/apps/<app_id>/store_settings` returns the exact `notification_url` and the `api_origin` to use as the SDK's proxy URL.
+1. **Credentials.** The developer enters them in the dashboard (Apps > the app):
+   - App Store: **In-app purchase key**, the In-App Purchase key from App Store Connect (.p8 file, key ID, issuer ID).
+   - Google Play: **Service account credentials**, the JSON of a service account with the "View financial data" permission.
+   Then call `verify-store-credentials` with the `app_id`. It returns `"status":"valid"` when Apple or Google accept them.
+2. **Notification URLs.** `get-app-store-settings` with the `app_id` returns the exact `notification_url`, and `api_origin`, which is the SDK's proxy URL.
+   - App Store: the URL has the form `https://revenuedot.example.com/v1/notifications/apple/<app_id>`. Paste it into App Store Connect > App Information > App Store Server Notifications, for Production and Sandbox.
+   - Google Play: the URL has the form `https://revenuedot.example.com/v1/notifications/google/<app_id>`. In Google Cloud > Pub/Sub, open the topic set in Play Console > Monetization setup and add a **push** subscription to this URL.
 
-**Check:** `GET /v2/projects/<project_id>/setup_health` shows, per app, `credentials_configured: true` and a `notification_status`. It is `waiting` until the first notification, `received` or `ready` after it, and `failing` with `last_notification_error` when a notification was rejected.
+**Check:** `get-project-health` shows, per app, `credentials_configured: true` and a `notification_status`. It is `waiting` until the first notification, `received` or `ready` after it, and `failing` with `last_notification_error` when a notification was rejected.
 
 ## Phase 6: Response signing (optional)
 
 The RevenueCat SDKs check response signatures against RevenueCat's key, which RevenueDot does not have. Apps using those SDKs must turn verification off (see the `add-subscriptions` skill), and `REVENUEDOT_SIGNING_KEY` is not needed.
 
-Set it only for SDK builds that pin this server's own public key:
-1. From a checkout of https://github.com/revenuedot/revenuedot: `pnpm install && pnpm tsx scripts/signing-keygen.ts`. It prints `REVENUEDOT_SIGNING_KEY=...` and the public key.
-2. Add `REVENUEDOT_SIGNING_KEY: ${REVENUEDOT_SIGNING_KEY}` under `environment:` of the `revenuedot` service, put the value in `.env`, and run `docker compose up -d`.
+Set it only for SDK builds that pin this server's own public key. The developer does these steps in their own terminal, because the output is a private key:
+1. In a checkout of the `revenuedot/revenuedot` repository, run `pnpm install && pnpm tsx scripts/signing-keygen.ts`. It prints the private seed as a `REVENUEDOT_SIGNING_KEY=...` line, and the public key.
+2. Add `REVENUEDOT_SIGNING_KEY: ${REVENUEDOT_SIGNING_KEY}` under `environment:` of the `revenuedot` service in `docker-compose.yml`, paste the printed line into `.env`, and run `docker compose up -d`.
 
-**Check:** `curl https://revenuedot.example.com/.well-known/revenuedot-signing-key` returns the `public_key`. Without the key it answers 404.
+**Check:** the server's `/.well-known/revenuedot-signing-key` path returns the `public_key` (for example `curl https://revenuedot.example.com/.well-known/revenuedot-signing-key`). Without the key it answers 404.
 
 ## Phase 7: Back up, restore, upgrade
 
@@ -144,4 +139,4 @@ docker compose build --pull revenuedot && docker compose up -d
 
 `docker compose down -v` deletes the database volume, with every customer and purchase. Never run it on a real server unless the user asks for a clean start.
 
-**Check:** after a restore or an upgrade, `/v1/health` returns `{"status":"ok"}` and `setup_health` still lists the apps.
+**Check:** after a restore or an upgrade, `/v1/health` returns `{"status":"ok"}` and `get-project-health` still lists the apps.
