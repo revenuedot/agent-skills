@@ -3,6 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { execFileSync } from "node:child_process";
 
 const root = resolve(import.meta.dirname, "..");
 const read = (p) => readFileSync(resolve(root, p), "utf8");
@@ -16,7 +17,10 @@ test("ChatGPT and Codex manifest has the listing fields and existing assets", ()
   for (const k of ["description", "author", "homepage", "repository", "license", "keywords"]) assert.ok(m[k], k);
   const ui = m.extensions["com.openai"].interface;
   for (const k of ["displayName", "shortDescription", "longDescription", "developerName", "category", "websiteURL", "privacyPolicyURL", "termsOfServiceURL", "defaultPrompt", "brandColor", "composerIcon", "logo"]) assert.ok(ui[k], k);
-  assert.ok(ui.shortDescription.length <= 80);
+  // OpenAI: display name and subtitle at most 30 characters; no pricing, free, trial, discount or comparison words in listing copy.
+  assert.ok(ui.displayName.length <= 30 && ui.shortDescription.length <= 30, "name and subtitle at most 30 characters");
+  const copy = [m.description, ui.displayName, ui.shortDescription, ui.longDescription, ...ui.defaultPrompt].join(" ");
+  assert.doesNotMatch(copy, /\b(free|trial|pricing|price|discount|cheaper|better than|alternative|revenuecat|vs\.?)\b/i);
   assert.equal(ui.defaultPrompt.length, 3);
   for (const k of ["composerIcon", "logo"]) assert.ok(existsSync(resolve(root, ui[k])), `${k} exists`);
   assert.match(ui.privacyPolicyURL, /^https:\/\/revenuedot\.app\/legal\/privacy$/);
@@ -33,7 +37,8 @@ test("the Claude manifest agrees with the root manifest", () => {
 
 test("both MCP configs point at the hosted server over HTTPS", () => {
   assert.equal(json(".mcp.json").mcpServers.revenuedot.url, MCP_URL);
-  assert.equal(json("mcp.json").mcpServers.revenuedot.url, MCP_URL);
+  // ChatGPT gets the profile without refunds; Claude gets all tools.
+  assert.equal(json("mcp.json").mcpServers.revenuedot.url, "https://mcp.revenuedot.app/chatgpt/mcp");
   assert.equal(json(".mcp.json").mcpServers.revenuedot.type, "http");
   assert.equal(json("mcp.json").mcpServers.revenuedot.type, "streamable-http");
 });
@@ -72,4 +77,20 @@ test("every MCP tool a skill names exists in revenuedot/mcp", () => {
   for (const s of skills) {
     for (const m of read(`skills/${s}/SKILL.md`).matchAll(toolLike)) assert.ok(real.has(m[1]), `${s} names ${m[1]}, which is not a tool`);
   }
+});
+
+test("every tool has an annotation justification, and none is left over", () => {
+  const src = resolve(root, "../mcp/src/tools.ts");
+  if (!existsSync(src)) return;
+  const real = [...readFileSync(src, "utf8").matchAll(/name: "([a-z]+(?:-[a-z]+)+)"/g)].map((m) => m[1]);
+  const doc = read("submission/annotation-justifications.md");
+  const documented = [...doc.matchAll(/^\| `([a-z-]+)` \|/gm)].map((m) => m[1]);
+  assert.deepEqual([...documented].sort(), [...real].sort());
+});
+
+test("the upload ZIP holds only what OpenAI accepts", () => {
+  const out = execFileSync("bash", [resolve(root, "scripts/pack-openai.sh"), "--list"], { encoding: "utf8" }).trim().split("\n");
+  for (const f of out) assert.match(f, /^(plugin\.json|mcp\.json|README\.md|assets\/[^/]+\.png|skills\/[a-z-]+\/SKILL\.md)$/, f);
+  for (const f of ["plugin.json", "mcp.json", "README.md", "assets/icon.png", "assets/logo.png", "skills/support-playbook/SKILL.md"]) assert.ok(out.includes(f), f);
+  assert.ok(!out.some((f) => /\.app\.json|hooks|bin\//.test(f)));
 });

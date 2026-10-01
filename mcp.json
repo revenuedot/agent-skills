@@ -1,6 +1,9 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
   "mcpServers": {
-    "revenuedot": { "type": "streamable-http", "url": "https://mcp.revenuedot.app/mcp" }
+    "revenuedot": {
+      "type": "streamable-http",
+      "url": "https://mcp.revenuedot.app/chatgpt/mcp"
+    }
   }
 }

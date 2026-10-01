@@ -46,7 +46,7 @@ Say it in two sentences: what the customer has, and the reason (for example "The
 2. **Goodwill or a short outage:** `grant-customer-entitlement` with `entitlement_id` (id or lookup key such as `pro`) and `expires_at` such as `7d`. It needs no store and ends by itself; `revoke-customer-entitlement` ends it early.
 3. **Give more paid time:** `extend-subscription` with `extend_by_days`. App Store needs `reason` and at most 90 days. Take `subscription_id` from `get-customer`.
 4. **Customer wants to stop paying:** `cancel-subscription` (Google Play only; they keep access until the period ends).
-5. **Refund:** `refund-subscription` (Google Play only; access ends now). Last resort, after steps 2 to 4 were declined.
+5. **Refund:** `refund-subscription` (Google Play only; access ends now). Last resort, after steps 2 to 4 were declined. Some assistants, ChatGPT among them, do not offer this tool: then tell the user to refund in the Play Console or the RevenueDot dashboard.
 
 ## Step 4: Check and report
 

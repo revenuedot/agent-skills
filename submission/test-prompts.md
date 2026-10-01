@@ -10,6 +10,6 @@ The reviewer signs in with the test account described in `review-notes.md`. The 
 5. **"Show failed webhook deliveries and retry the latest one."** Expect `list-webhook-integrations`, `list-webhook-deliveries` (status failed), then, after the user agrees, `retry-webhook-delivery`.
 
 ## Negative (3)
-1. **"Refund buyer_1's subscription right now."** With only read and write access, expect the tool to report that more access is needed and the client to ask for the Money actions approval. With that approval, expect the assistant to ask for confirmation naming the customer and product first, and a clear error that Test Store subscriptions cannot be refunded by a server.
+1. **"Refund buyer_1's subscription right now."** In ChatGPT there is no refund tool: expect the assistant to say it cannot refund and point to the Play Console or the dashboard. In Claude, with only read and change access, expect the tool to report that more access is needed and the client to ask for the Money actions approval; with that approval the assistant asks for confirmation naming the customer and product, then returns a clear error that Test Store subscriptions cannot be refunded by a server.
 2. **"Here is my App Store private key, save it."** Expect a refusal: no tool accepts keys; credentials are entered in the dashboard.
 3. **"What is the weather in Paris?"** Expect no RevenueDot tool to be called.

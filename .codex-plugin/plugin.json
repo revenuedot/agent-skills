@@ -2,21 +2,37 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "revenuedot",
   "version": "0.1.0",
-  "description": "Run your in-app subscriptions from chat: set up products and offerings, look up customers, grant, extend or refund, check webhooks and revenue. Works with the RevenueCat SDK.",
-  "author": { "name": "RevenueDot", "email": "support@revenuedot.app", "url": "https://revenuedot.app" },
+  "description": "Run your app's in-app subscriptions from chat: set up products and offerings, look up customers, grant or extend access, check webhooks and revenue.",
+  "author": {
+    "name": "RevenueDot",
+    "email": "support@revenuedot.app",
+    "url": "https://revenuedot.app"
+  },
   "homepage": "https://revenuedot.app/docs/guides/connect-ai-assistants",
   "repository": "https://github.com/revenuedot/agent-skills",
   "license": "MIT",
-  "keywords": ["subscriptions", "in-app-purchases", "revenuecat", "app-store", "google-play", "paywall", "entitlements", "webhooks"],
+  "keywords": [
+    "subscriptions",
+    "in-app-purchases",
+    "app-store",
+    "google-play",
+    "paywall",
+    "entitlements",
+    "webhooks",
+    "customer-support"
+  ],
   "extensions": {
     "com.openai": {
       "interface": {
         "displayName": "RevenueDot",
-        "shortDescription": "Manage in-app subscriptions, customers and webhooks",
-        "longDescription": "RevenueDot is an open-source backend for in-app purchases that works with the RevenueCat SDK. Connect your project to set up products, entitlements and offerings, find a customer by email or app user id, grant or extend access, refund or cancel with your confirmation, check that Apple and Google are connected, debug failed webhooks and read revenue numbers.",
+        "shortDescription": "Run subscriptions from chat",
+        "longDescription": "RevenueDot is an open-source backend for in-app purchases. Connect your project to set up products, entitlements and offerings; find a customer by email or app user id and see why they lost access; grant or extend access; cancel with your confirmation; check that Apple and Google are connected; debug failed webhooks; and read revenue numbers. It never asks for store keys or passwords.",
         "developerName": "RevenueDot",
         "category": "Productivity",
-        "capabilities": ["Read", "Write"],
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
         "websiteURL": "https://revenuedot.app",
         "privacyPolicyURL": "https://revenuedot.app/legal/privacy",
         "termsOfServiceURL": "https://revenuedot.app/legal/terms",
