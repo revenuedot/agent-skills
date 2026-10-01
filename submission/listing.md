@@ -2,7 +2,8 @@
 
 **Name:** RevenueDot (10 characters)
 **Subtitle (OpenAI limit 30 characters):** Run subscriptions from chat (27)
-**Category:** Productivity (ChatGPT), Business (Claude)
+**Claude one-liner (200 characters):** Manage your mobile app's subscriptions and in-app purchases: check MRR and revenue, look up customers, set up plans and paywall offerings, and fix App Store and Google Play issues.
+**Category:** Productivity (ChatGPT); Development tools and Data & Analytics (Claude)
 **Website:** https://revenuedot.app
 **Privacy policy:** https://revenuedot.app/legal/privacy
 **Terms:** https://revenuedot.app/legal/terms
