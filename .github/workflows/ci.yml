@@ -1,4 +1,4 @@
-# Checks the plugin manifests, MCP configs and skills on every push and pull request.
+# Checks the plugin in plugins/revenuedot (manifests, MCP configs, skills) and the marketplaces on every push and pull request.
 name: CI
 on:
   push:
@@ -15,5 +15,11 @@ jobs:
         with: { repository: revenuedot/mcp, path: mcp }
       - uses: actions/setup-node@v5
         with: { node-version: 24 }
-      - run: node --test test/plugin.test.mjs
+      - run: node --test test/*.mjs
+        working-directory: agent-skills
+      # The plugin is plugins/revenuedot; the repository root is the marketplace that lists it.
+      - run: |
+          npm install -g @anthropic-ai/claude-code@2.1.286
+          claude plugin validate plugins/revenuedot --strict
+          claude plugin validate . --strict
         working-directory: agent-skills

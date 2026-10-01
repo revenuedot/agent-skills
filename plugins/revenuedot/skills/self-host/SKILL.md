@@ -119,7 +119,7 @@ The RevenueCat SDKs check response signatures against RevenueCat's key, which Re
 
 Set it only for SDK builds that pin this server's own public key. The developer does these steps in their own terminal, because the output is a private key:
 1. In a checkout of the `revenuedot/revenuedot` repository, run `pnpm install && pnpm tsx scripts/signing-keygen.ts`. It prints the private seed as a `REVENUEDOT_SIGNING_KEY=...` line, and the public key.
-2. Add `REVENUEDOT_SIGNING_KEY: ${REVENUEDOT_SIGNING_KEY}` under `environment:` of the `revenuedot` service in `docker-compose.yml`, paste the printed line into `.env`, and run `docker compose up -d`.
+2. Paste the printed `REVENUEDOT_SIGNING_KEY=...` line into `.env` (`.env.example` has it commented out), then run `docker compose up -d`. The compose file in `selfhost/docker-compose` already passes this variable from `.env` to the server, so nothing in `docker-compose.yml` changes.
 
 **Check:** the server's `/.well-known/revenuedot-signing-key` path returns the `public_key` (for example `curl https://revenuedot.example.com/.well-known/revenuedot-signing-key`). Without the key it answers 404.
 

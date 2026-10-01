@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "revenuedot",
-      "source": "./",
+      "source": "./plugins/revenuedot",
       "description": "RevenueDot connector and skills: manage your mobile app's subscriptions, in-app purchases, customers, paywall offerings and revenue from chat.",
       "category": "productivity"
     }

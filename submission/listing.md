@@ -10,12 +10,13 @@
 **Support page:** https://revenuedot.app/docs/help (email: support@revenuedot.app)
 **MCP server for ChatGPT:** https://mcp.revenuedot.app/chatgpt/mcp (37 tools, no refunds: OpenAI refuses plugins that move money). **For the Claude directory and the Claude plugin:** https://mcp.revenuedot.app/claude/mcp (all 38 tools, including refunds behind the Money actions permission; Kai decided on 2026-10-01 that a refund of the developer's own customer is not a money transfer). https://mcp.revenuedot.app/mcp serves the same 38 tools for custom connectors. Streamable HTTP, OAuth 2.1 with PKCE S256, client ID metadata documents and dynamic registration. The origin https://mcp.revenuedot.app never changes.
 **Source:** https://github.com/revenuedot/mcp and https://github.com/revenuedot/agent-skills (MIT)
+**Plugin path (Claude plugin submission):** `plugins/revenuedot` in https://github.com/revenuedot/agent-skills, branch `main`. The directory reads and scans only that folder.
 
 ## Description
 RevenueDot is an open-source backend for in-app purchases. Connect your RevenueDot project to run your subscriptions from chat: set up products, entitlements and offerings; find a customer by email or app user id and see why they lost access; grant or extend access; cancel with your confirmation (Claude also refunds); check that Apple and Google are connected; debug failed webhooks; and read MRR and revenue.
 
 ## Copy rules for the OpenAI listing
-No pricing, free plans, trials, discounts or comparisons, and no RevenueCat name. Starter prompts are the three in `plugin.json`. RevenueDot sells nothing in the chat and has no checkout or upgrade link: it administers the owner's own app data.
+No pricing, free plans, trials, discounts or comparisons, and no RevenueCat name. Starter prompts are the three in `plugins/revenuedot/plugin.json`. RevenueDot sells nothing in the chat and has no checkout or upgrade link: it administers the owner's own app data.
 
 ## What it can and cannot do
 - Reads and changes one project that the user picks when connecting. Read only is an option.
