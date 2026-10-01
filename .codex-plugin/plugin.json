@@ -1,0 +1,34 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "revenuedot",
+  "version": "0.1.0",
+  "description": "Run your in-app subscriptions from chat: set up products and offerings, look up customers, grant, extend or refund, check webhooks and revenue. Works with the RevenueCat SDK.",
+  "author": { "name": "RevenueDot", "email": "support@revenuedot.app", "url": "https://revenuedot.app" },
+  "homepage": "https://revenuedot.app/docs/guides/connect-ai-assistants",
+  "repository": "https://github.com/revenuedot/agent-skills",
+  "license": "MIT",
+  "keywords": ["subscriptions", "in-app-purchases", "revenuecat", "app-store", "google-play", "paywall", "entitlements", "webhooks"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "RevenueDot",
+        "shortDescription": "Manage in-app subscriptions, customers and webhooks",
+        "longDescription": "RevenueDot is an open-source backend for in-app purchases that works with the RevenueCat SDK. Connect your project to set up products, entitlements and offerings, find a customer by email or app user id, grant or extend access, refund or cancel with your confirmation, check that Apple and Google are connected, debug failed webhooks and read revenue numbers.",
+        "developerName": "RevenueDot",
+        "category": "Productivity",
+        "capabilities": ["Read", "Write"],
+        "websiteURL": "https://revenuedot.app",
+        "privacyPolicyURL": "https://revenuedot.app/legal/privacy",
+        "termsOfServiceURL": "https://revenuedot.app/legal/terms",
+        "defaultPrompt": [
+          "How is revenue this month, and did any webhook fail?",
+          "Find the customer with email jane@example.com and tell me why they lost access.",
+          "Set up monthly and annual Pro plans behind a pro entitlement."
+        ],
+        "brandColor": "#F7B500",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/logo.png"
+      }
+    }
+  }
+}

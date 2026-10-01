@@ -1,0 +1,12 @@
+{
+  "name": "revenuedot",
+  "interface": { "displayName": "RevenueDot" },
+  "plugins": [
+    {
+      "name": "revenuedot",
+      "source": { "source": "local", "path": "./" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Productivity"
+    }
+  ]
+}

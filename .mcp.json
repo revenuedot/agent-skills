@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "revenuedot": { "type": "http", "url": "https://mcp.revenuedot.app/mcp" }
+  }
+}

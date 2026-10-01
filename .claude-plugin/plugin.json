@@ -1,0 +1,11 @@
+{
+  "name": "revenuedot",
+  "displayName": "RevenueDot",
+  "version": "0.1.0",
+  "description": "Run your in-app subscriptions from Claude: set up products and offerings, look up customers, grant, extend or refund, check webhooks and revenue. Works with the RevenueCat SDK.",
+  "author": { "name": "RevenueDot", "email": "support@revenuedot.app", "url": "https://revenuedot.app" },
+  "homepage": "https://revenuedot.app/docs/guides/connect-ai-assistants",
+  "repository": "https://github.com/revenuedot/agent-skills",
+  "license": "MIT",
+  "keywords": ["subscriptions", "in-app-purchases", "revenuecat", "app-store", "google-play", "paywall", "entitlements", "webhooks"]
+}
