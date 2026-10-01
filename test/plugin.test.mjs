@@ -16,12 +16,15 @@ test("ChatGPT and Codex manifest has the listing fields and existing assets", ()
   assert.match(m.version, /^\d+\.\d+\.\d+$/);
   for (const k of ["description", "author", "homepage", "repository", "license", "keywords"]) assert.ok(m[k], k);
   const ui = m.extensions["com.openai"].interface;
-  for (const k of ["displayName", "shortDescription", "longDescription", "developerName", "category", "websiteURL", "privacyPolicyURL", "termsOfServiceURL", "defaultPrompt", "brandColor", "composerIcon", "logo"]) assert.ok(ui[k], k);
+  for (const k of ["displayName", "shortDescription", "longDescription", "developerName", "category", "websiteURL", "privacyPolicyURL", "termsOfServiceURL", "supportURL", "defaultPrompt", "brandColor", "composerIcon", "logo"]) assert.ok(ui[k], k);
   // OpenAI: display name and subtitle at most 30 characters; no pricing, free, trial, discount or comparison words in listing copy.
   assert.ok(ui.displayName.length <= 30 && ui.shortDescription.length <= 30, "name and subtitle at most 30 characters");
   const copy = [m.description, ui.displayName, ui.shortDescription, ui.longDescription, ...ui.defaultPrompt].join(" ");
   assert.doesNotMatch(copy, /\b(free|trial|pricing|price|discount|cheaper|better than|alternative|revenuecat|vs\.?)\b/i);
   assert.equal(ui.defaultPrompt.length, 3);
+  // OpenAI rejects a brand colour with less than 2:1 contrast against white.
+  const lum = (hex) => { const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+  assert.ok(1.05 / (lum(ui.brandColor) + 0.05) >= 2, `brand colour ${ui.brandColor} needs 2:1 contrast on white`);
   for (const k of ["composerIcon", "logo"]) assert.ok(existsSync(resolve(root, ui[k])), `${k} exists`);
   assert.match(ui.privacyPolicyURL, /^https:\/\/revenuedot\.app\/legal\/privacy$/);
 });

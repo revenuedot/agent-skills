@@ -1,7 +1,7 @@
 {
   "name": "revenuedot",
   "displayName": "RevenueDot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Run your in-app subscriptions from Claude: set up products and offerings, look up customers, grant, extend or refund, check webhooks and revenue. Works with the RevenueCat SDK.",
   "author": {
     "name": "RevenueDot",

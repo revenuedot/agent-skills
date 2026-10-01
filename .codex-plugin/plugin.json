@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "revenuedot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Run your app's in-app subscriptions from chat: set up products and offerings, look up customers, grant or extend access, check webhooks and revenue.",
   "author": {
     "name": "RevenueDot",
@@ -41,9 +41,10 @@
           "Find the customer with email jane@example.com and tell me why they lost access.",
           "Set up monthly and annual Pro plans behind a pro entitlement."
         ],
-        "brandColor": "#F7B500",
+        "brandColor": "#0A0A0A",
         "composerIcon": "./assets/icon.png",
-        "logo": "./assets/logo.png"
+        "logo": "./assets/logo.png",
+        "supportURL": "https://revenuedot.app/docs/help"
       }
     }
   }
