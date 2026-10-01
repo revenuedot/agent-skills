@@ -85,12 +85,14 @@ Tell the user: sign-up is open to anyone who can reach the server. A new account
 The RevenueDot MCP server works against a self-hosted server too, and the server itself is the OAuth sign-in. The developer runs it in a terminal of their own:
 
 ```bash
-npx -y @revenuedot/mcp --http --port 8788 --url https://revenuedot.example.com
+npx -y @revenuedot/mcp@0.1.0 --http --port 8788 --url https://revenuedot.example.com
 ```
 
 Then connects the assistant to `http://127.0.0.1:8788/mcp`. In Claude Code: `claude mcp add --transport http revenuedot http://127.0.0.1:8788/mcp`. Connecting opens the server's own sign-in page, where the developer picks the project and **read and change** access. No key is copied anywhere: the access token is a project key the server lists under **API keys** as `OAuth: <client name>`, and revoking it there ends the connection.
 
 To serve it to a team, put it behind the reverse proxy with `--host 0.0.0.0 --public-url https://mcp.your-domain`.
+
+Version 0.1.0 of the local server has 17 tools: projects, apps (list only), the catalog, customers, granted access, webhooks and `get-import-status`. It does not have `create-app`, `verify-store-credentials`, `get-app-store-settings` or `get-project-health` yet, so phase 5 gives the dashboard step next to each of those tools.
 
 Backends that call the REST API need their own secret key: the developer creates it in the dashboard under **API keys** (`/projects/<project_id>/api-keys`). It is shown once. `permissions` limit what it can do; without them the key has full access to the project. The key goes in the backend's secret settings, never into the chat or a committed file.
 
@@ -98,17 +100,17 @@ Backends that call the REST API need their own secret key: the developer creates
 
 ## Phase 5: Connect the stores
 
-Create an app per store with `create-app`: `type: "app_store"` with `bundle_id`, or `type: "play_store"` with `package_name` (or in the dashboard under **Apps**). Then, per app:
+Create an app per store: `create-app` with `type: "app_store"` and `bundle_id`, or `type: "play_store"` and `package_name`. Without that tool, the developer adds it in the dashboard under **Apps**. Then, per app:
 
 1. **Credentials.** The developer enters them in the dashboard (Apps > the app):
    - App Store: **In-app purchase key**, the In-App Purchase key from App Store Connect (.p8 file, key ID, issuer ID).
    - Google Play: **Service account credentials**, the JSON of a service account with the "View financial data" permission.
-   Then call `verify-store-credentials` with the `app_id`. It returns `"status":"valid"` when Apple or Google accept them.
-2. **Notification URLs.** `get-app-store-settings` with the `app_id` returns the exact `notification_url`, and `api_origin`, which is the SDK's proxy URL.
+   Then call `verify-store-credentials` with the `app_id`, or the developer clicks **Check credentials** on the same page. It answers `valid` when Apple or Google accept them.
+2. **Notification URLs.** `get-app-store-settings` with the `app_id` returns the exact `notification_url`, and `api_origin`, which is the SDK's proxy URL. The app's dashboard page shows the same URL with a copy button.
    - App Store: the URL has the form `https://revenuedot.example.com/v1/notifications/apple/<app_id>`. Paste it into App Store Connect > App Information > App Store Server Notifications, for Production and Sandbox.
    - Google Play: the URL has the form `https://revenuedot.example.com/v1/notifications/google/<app_id>`. In Google Cloud > Pub/Sub, open the topic set in Play Console > Monetization setup and add a **push** subscription to this URL.
 
-**Check:** `get-project-health` shows, per app, `credentials_configured: true` and a `notification_status`. It is `waiting` until the first notification, `received` or `ready` after it, and `failing` with `last_notification_error` when a notification was rejected.
+**Check:** `get-project-health` shows, per app, `credentials_configured: true` and a `notification_status`. It is `waiting` until the first notification, `received` or `ready` after it, and `failing` with `last_notification_error` when a notification was rejected. Without that tool, the app's **Setup checklist** in the dashboard shows whether the key is saved and when notifications last arrived.
 
 ## Phase 6: Response signing (optional)
 
@@ -139,4 +141,4 @@ docker compose build --pull revenuedot && docker compose up -d
 
 `docker compose down -v` deletes the database volume, with every customer and purchase. Never run it on a real server unless the user asks for a clean start.
 
-**Check:** after a restore or an upgrade, `/v1/health` returns `{"status":"ok"}` and `get-project-health` still lists the apps.
+**Check:** after a restore or an upgrade, `/v1/health` returns `{"status":"ok"}` and `list-apps` still lists the apps.

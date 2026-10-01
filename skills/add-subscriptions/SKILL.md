@@ -148,7 +148,7 @@ Complete paywall screens per platform: https://github.com/revenuedot/examples/tr
 
 Known limits today:
 - Test Store products show $0.00 unless the product has a price. The user sets it in the dashboard: **Products**, the product, **Test Store price** (for example 9.99 USD). Each Test Store product has one price.
-- In Expo Go and on the web, `react-native-purchases` only accepts `test_` and `rcb_` keys. Real store purchases need a development build (`npx expo run:ios` / `npx expo run:android`).
+- In Expo Go and on the web, `react-native-purchases` only accepts `test_` and `rcb_` keys. Real store purchases need a development build, made with the project's own Expo CLI (`expo run:ios` / `expo run:android`).
 
 ## Next
 
