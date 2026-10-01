@@ -135,16 +135,16 @@ test("every tool has an annotation justification, and none is left over", () => 
 });
 
 test("no skill or other plugin text reads, exports or sends a secret key: RevenueDot steps go through the MCP tools", () => {
-  const credVar = /\b[A-Z0-9_]*(API_KEY|SECRET|TOKEN|PASSWORD|SIGNING_KEY|PRIVATE_KEY)\b/;
+  const credVar = /\b[A-Z0-9_]*(API_KEY|SECRET|TOKEN|PASSWORD|SIGNING_KEY|PRIVATE_KEY|ENCRYPTION_KEY|SMTP_URL)\b/;
   for (const f of pluginFiles.filter((f) => /\.(md|json)$/.test(f))) {
     const lines = pread(f).split("\n");
     lines.forEach((line, i) => {
       const where = `${f}:${i + 1}`;
       assert.doesNotMatch(line, /Authorization: Bearer|-H ["']Authorization/i, `${where} sends a key in a header`);
-      assert.doesNotMatch(line, /\$\{?[A-Z0-9_]*(API_KEY|SECRET|TOKEN|PASSWORD|SIGNING_KEY|PRIVATE_KEY)\b/, `${where} expands a secret variable`);
+      assert.doesNotMatch(line, /\$\{?[A-Z0-9_]*(API_KEY|SECRET|TOKEN|PASSWORD|SIGNING_KEY|PRIVATE_KEY|ENCRYPTION_KEY|SMTP_URL)\b/, `${where} expands a secret variable`);
       assert.doesNotMatch(line, /\bprintenv\b|\benv\s*\||export -p/, `${where} dumps the environment`);
       assert.doesNotMatch(line, /\bsk_[A-Za-z0-9]{6,}/, `${where} holds a secret key`);
-      assert.doesNotMatch(line, /(export|-e)\s+[A-Z0-9_]*(API_KEY|SECRET|TOKEN|PASSWORD)=/, `${where} puts a secret in a variable`);
+      assert.doesNotMatch(line, /(export|-e)\s+[A-Z0-9_]*(API_KEY|SECRET|TOKEN|PASSWORD|SIGNING_KEY|PRIVATE_KEY|ENCRYPTION_KEY|SMTP_URL)=/, `${where} puts a secret in a variable`);
       if (credVar.test(line)) assert.doesNotMatch(line, /https?:\/\//, `${where} puts a credential-named variable beside a URL`);
     });
   }

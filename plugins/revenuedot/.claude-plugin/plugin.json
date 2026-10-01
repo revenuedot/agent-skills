@@ -1,7 +1,7 @@
 {
   "name": "revenuedot",
   "displayName": "RevenueDot",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Manage your mobile app's subscriptions and in-app purchases from Claude: check MRR, look up customers, set up plans and paywall offerings, grant, extend or refund, and fix App Store and Google Play issues. Works with the RevenueCat SDK.",
   "author": {
     "name": "RevenueDot",

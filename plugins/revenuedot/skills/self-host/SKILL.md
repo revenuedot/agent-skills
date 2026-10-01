@@ -12,10 +12,10 @@ RevenueDot is not affiliated with RevenueCat, Inc.
 
 ## Rules for the agent
 
-- **Never read, ask for, print or commit a secret.** That covers the Postgres password, secret API keys, the signing key and store credentials. The developer sets them in their own terminal, in `.env` or in the dashboard. Do not open `.env` after the developer has filled it in.
+- **Never read, ask for, print, generate or commit a secret.** That covers the Postgres password, the encryption key, the SMTP password, secret API keys, the signing key and store credentials. Do not run the key generation commands yourself, because their output would land in the chat. The developer sets them in their own terminal, in `.env` or in the dashboard. Do not open `.env` after the developer has filled it in.
 - **Use the RevenueDot MCP tools for RevenueDot steps** once phase 4 has connected them. They sign in with OAuth against the developer's own server.
 - **If the user pastes a key into the chat anyway,** do not repeat, store or use it. Tell them the key is now exposed: revoke it (an App Store key in App Store Connect > Users and Access > Integrations, a Google service account key in the Google Cloud console, a RevenueDot or RevenueCat secret key on that dashboard's API keys page), create a new one, and enter it in the RevenueDot dashboard.
-- `POSTGRES_PASSWORD` must be set before the first start. Postgres stores it in the volume on first start; changing it later needs `ALTER USER` in Postgres too.
+- `POSTGRES_PASSWORD` and `REVENUEDOT_ENCRYPTION_KEY` must be set before the first start. Postgres stores the password in the volume on first start, so changing it later needs `ALTER USER` in Postgres too. Changing the encryption key later means entering the integrations' keys again.
 - Run one `revenuedot` container per database. The container runs a background job every 30 seconds (expirations, webhook sends), and two containers would both run it.
 - Run the check after each phase.
 
@@ -29,7 +29,12 @@ cd examples/selfhost/docker-compose
 cp .env.example .env
 ```
 
-The developer opens `.env` and replaces `change-me` in `POSTGRES_PASSWORD` with a long random value. Then:
+The developer fills in `.env` in their own editor and terminal. The assistant never opens it.
+1. Replace `change-me` in `POSTGRES_PASSWORD` with a long random value.
+2. **Required before the first start:** run `openssl rand -base64 32` in their own terminal and paste the output after `REVENUEDOT_ENCRYPTION_KEY=`. The key seals the API keys and tokens of integrations and data exports (Slack, Segment, Amplitude, S3 and others). Without it, and without a signing key (phase 6), the server stores those credentials unencrypted. Keep a copy with the backups (phase 7): a changed or lost key means entering those integrations' keys again.
+3. To confirm the key is there without showing it, the developer runs `grep -c '^REVENUEDOT_ENCRYPTION_KEY=.' .env`, which prints `1`.
+
+Then:
 
 ```bash
 docker compose up -d            # builds the image from https://github.com/revenuedot/revenuedot.git#main
@@ -42,6 +47,15 @@ Settings in `.env`:
 | `POSTGRES_PASSWORD` | none, required | Password of the bundled Postgres |
 | `REVENUEDOT_PORT` | `8787` | Host port for the API and the dashboard |
 | `REVENUEDOT_SOURCE` | `https://github.com/revenuedot/revenuedot.git#main` | Where the image is built from; can be a local checkout |
+| `REVENUEDOT_ENCRYPTION_KEY` | empty | Required by this guide. Base64 of 32 random bytes that seals integration and data export credentials. Empty falls back to a key derived from the signing key; with neither, they are stored unencrypted |
+| `REVENUEDOT_PUBLIC_URL` | empty (the address each request came in on) | The public address of the dashboard, used for links in emails. See phase 2 |
+| `REVENUEDOT_ALLOW_SIGNUP` | `false` | Only the first account (the owner) can sign up. `true` lets anyone who can reach the dashboard create an account. See phase 3 |
+| `REVENUEDOT_SMTP_URL` | empty (emails go to the server log) | SMTP server for password resets, invites, verification links and alerts. See phase 3 |
+| `REVENUEDOT_MAIL_FROM` | `RevenueDot <no-reply@localhost>` | Sender of those emails |
+| `REVENUEDOT_MAIL_REPLY_TO` | empty | Reply-to address of those emails |
+| `REVENUEDOT_SIGNING_KEY` | empty (signing off) | Optional. Base64 Ed25519 seed for signed SDK responses. See phase 6 |
+
+Compose passes every `REVENUEDOT_*` setting except `REVENUEDOT_PORT` and `REVENUEDOT_SOURCE` from `.env` to the server.
 
 Inside the container the server reads:
 
@@ -50,7 +64,6 @@ Inside the container the server reads:
 | `DATABASE_URL` | set by Compose to the bundled Postgres | Postgres connection string. Point it at a managed Postgres to use one. Without it the server falls back to an embedded dev database (`pglite://./.data/dev`), which is not for production |
 | `PORT` | `8787` | Port the server listens on |
 | `DASHBOARD_DIST` | `/app/apps/dashboard/dist` (set in the Dockerfile) | Folder of the built dashboard. If it has no `index.html`, only the API runs |
-| `REVENUEDOT_SIGNING_KEY` | unset (signing off) | Optional. Base64 Ed25519 seed for signed SDK responses. See phase 6 |
 
 App Store and Google Play credentials are not environment variables. They belong to each app (phase 5).
 
@@ -69,6 +82,7 @@ The stores and phones must reach the server over HTTPS.
 
 1. Put a reverse proxy (Caddy, nginx, a load balancer) in front of port 8787, **at the root of a host** such as `https://revenuedot.example.com`. The SDKs drop any path in the proxy URL, so `https://example.com/revenuedot` does not work.
 2. Pass `X-Forwarded-Host` and `X-Forwarded-Proto` through. RevenueDot builds the notification URLs it shows from them.
+3. Set `REVENUEDOT_PUBLIC_URL=https://revenuedot.example.com` in `.env` and run `docker compose up -d`, so links in emails point at the public host.
 
 **Check:** `curl https://revenuedot.example.com/v1/health` returns `{"status":"ok"}`.
 
@@ -77,7 +91,9 @@ The stores and phones must reach the server over HTTPS.
 1. The developer opens `https://revenuedot.example.com/signup` and creates an account. Sign-up creates the account and its first project. The dashboard is at `/login`; the bare `/` returns a small JSON document.
 2. For a local trial instead, `seed.sh` in the same folder signs up a development account and adds a Test Store app, a `pro` entitlement and a `default` offering. The developer runs `./seed.sh` (it reads `RD_URL`, `RD_EMAIL` and `RD_PASSWORD` when set).
 
-Tell the user: sign-up is open to anyone who can reach the server. A new account only sees its own project, but restrict `/signup` and `/auth/signup` at the reverse proxy after the first account if they do not want strangers creating accounts.
+Sign-up closes after this first account: the server lets only its owner sign up while `REVENUEDOT_ALLOW_SIGNUP` is `false`, the default. Leave it that way and invite teammates to the project instead. Set it to `true` only if anyone who can reach the dashboard may create an account.
+
+Email: without `REVENUEDOT_SMTP_URL` the server sends nothing and prints every email, including password reset and invite links, to `docker compose logs revenuedot`. For a real server, the developer puts their SMTP provider's address in `REVENUEDOT_SMTP_URL` in `.env` (`smtp://` for STARTTLS on port 587, `smtps://` for TLS on port 465, special characters in the user or password URL-encoded), sets `REVENUEDOT_MAIL_FROM` to the sender, and runs `docker compose up -d`. The server log then says "Email: SMTP".
 
 **Check:** the dashboard opens on the new project.
 
@@ -139,6 +155,8 @@ docker compose start revenuedot
 # Upgrade: back up first, then rebuild from the latest source. Migrations run on start.
 docker compose build --pull revenuedot && docker compose up -d
 ```
+
+Back up `.env` too, stored apart from the dumps: it holds `REVENUEDOT_ENCRYPTION_KEY`, and a restored database without that key cannot open the integrations' credentials.
 
 `docker compose down -v` deletes the database volume, with every customer and purchase. Never run it on a real server unless the user asks for a clean start.
 
