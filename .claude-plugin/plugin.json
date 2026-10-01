@@ -9,6 +9,7 @@
     "url": "https://revenuedot.app"
   },
   "homepage": "https://revenuedot.app/docs/guides/connect-ai-assistants",
+  "privacyPolicyUrl": "https://revenuedot.app/legal/privacy",
   "repository": "https://github.com/revenuedot/agent-skills",
   "license": "MIT",
   "keywords": [
