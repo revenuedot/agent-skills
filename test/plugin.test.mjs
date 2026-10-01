@@ -110,6 +110,8 @@ test("no skill reads, exports or sends a secret key: RevenueDot steps go through
 test("the upload ZIP holds only what OpenAI accepts", () => {
   const out = execFileSync("bash", [resolve(root, "scripts/pack-openai.sh"), "--list"], { encoding: "utf8" }).trim().split("\n");
   for (const f of out) assert.match(f, /^(plugin\.json|mcp\.json|README\.md|assets\/[^/]+\.png|skills\/[a-z-]+\/SKILL\.md)$/, f);
-  for (const f of ["plugin.json", "mcp.json", "README.md", "assets/icon.png", "assets/logo.png", "skills/support-playbook/SKILL.md"]) assert.ok(out.includes(f), f);
+  // Images by folder, not by name (the Claude directory holds plugins whose code names image files).
+  const images = readdirSync(resolve(root, "assets")).map((f) => `assets/${f}`);
+  for (const f of ["plugin.json", "mcp.json", "README.md", ...images, "skills/support-playbook/SKILL.md"]) assert.ok(out.includes(f), f);
   assert.ok(!out.some((f) => /\.app\.json|hooks|bin\//.test(f)));
 });

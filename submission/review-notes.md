@@ -1,7 +1,7 @@
 # Notes for the reviewer
 
 - **What this plugin is not:** it does not sell subscriptions or take payments. RevenueDot is the backend app developers use to track their own apps' in-app purchases; the plugin lets the developer administer that data. It has no checkout or upgrade link.
-- **Endpoint for ChatGPT:** https://mcp.revenuedot.app/chatgpt/mcp (33 tools; refunds are not offered here because they move money). Claude uses /mcp with all 34.
+- **Endpoint for ChatGPT:** https://mcp.revenuedot.app/chatgpt/mcp (37 tools; refunds are not offered here because they move money). Claude uses /claude/mcp with all 38.
 - **Sign-in:** the connector uses OAuth. The consent page is on https://api.revenuedot.app and signs in with the RevenueDot dashboard account (https://app.revenuedot.app). Test account: see the credentials field of the submission form (never stored in this repo). The account has one project, "Review demo", with the data listed in `test-prompts.md`.
 - **Access levels:** the consent page offers "Read and change" or "Read only", and a separate "Money actions" checkbox (cancel, refund, extend, Test Store purchases). A first connection asks for read and change only; a tool that needs money actions returns `insufficient_scope` and the client asks again.
 - **Revoking:** deleting the key named "OAuth: <app>" under API keys in the dashboard ends the connection at once.

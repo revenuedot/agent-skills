@@ -8,7 +8,7 @@
 **Privacy policy:** https://revenuedot.app/legal/privacy
 **Terms:** https://revenuedot.app/legal/terms
 **Support page:** https://revenuedot.app/docs/help (email: support@revenuedot.app)
-**MCP server for ChatGPT:** https://mcp.revenuedot.app/chatgpt/mcp (33 tools, no refunds: OpenAI refuses plugins that move money). **For the Claude directory and the Claude plugin:** https://mcp.revenuedot.app/claude/mcp (all 34 tools, including refunds behind the Money actions permission; Kai decided on 2026-10-01 that a refund of the developer's own customer is not a money transfer). https://mcp.revenuedot.app/mcp serves the same 34 tools for custom connectors. Streamable HTTP, OAuth 2.1 with PKCE S256, client ID metadata documents and dynamic registration. The origin https://mcp.revenuedot.app never changes.
+**MCP server for ChatGPT:** https://mcp.revenuedot.app/chatgpt/mcp (37 tools, no refunds: OpenAI refuses plugins that move money). **For the Claude directory and the Claude plugin:** https://mcp.revenuedot.app/claude/mcp (all 38 tools, including refunds behind the Money actions permission; Kai decided on 2026-10-01 that a refund of the developer's own customer is not a money transfer). https://mcp.revenuedot.app/mcp serves the same 38 tools for custom connectors. Streamable HTTP, OAuth 2.1 with PKCE S256, client ID metadata documents and dynamic registration. The origin https://mcp.revenuedot.app never changes.
 **Source:** https://github.com/revenuedot/mcp and https://github.com/revenuedot/agent-skills (MIT)
 
 ## Description
@@ -23,8 +23,8 @@ No pricing, free plans, trials, discounts or comparisons, and no RevenueCat name
 - It never asks for, or shows, store keys, passwords or API keys. Those are entered in the RevenueDot dashboard.
 - It cannot create API keys, invite members or delete projects.
 
-## Tools (33 in ChatGPT, 34 in Claude)
-15 read-only, 12 that add or change data, 7 that delete, cancel, refund, revoke or archive (marked destructive; refund is Claude only). Reasons for each annotation: `annotation-justifications.md`. The full list with the OAuth scope each needs is in https://github.com/revenuedot/mcp#tools.
+## Tools (37 in ChatGPT, 38 in Claude)
+17 read-only, 14 that add or change data, 7 that delete, cancel, refund, revoke or archive (marked destructive; refund is Claude only). Reasons for each annotation: `annotation-justifications.md`. The full list with the OAuth scope each needs is in https://github.com/revenuedot/mcp#tools.
 
 ## Data the app reads
 The project's catalog (products, entitlements, offerings), customers' app user ids, optional email attributes, subscription and transaction history, webhook delivery logs and revenue metrics. It does not read store credentials. Nothing is sent to third parties; results go to the assistant the user connected.
