@@ -36,6 +36,14 @@ This repository holds the RevenueDot plugin for Claude, ChatGPT and Codex. It co
 - [`weekly-revenue-check`](plugins/revenuedot/skills/weekly-revenue-check/SKILL.md): a five-line health and revenue report.
 - [`self-host`](plugins/revenuedot/skills/self-host/SKILL.md): run RevenueDot yourself with Docker and Postgres.
 
+## Use with your coding agent
+
+Coding agents can read this repository on demand, so they use the right package, imports and API:
+
+- **Context7:** https://context7.com/revenuedot/agent-skills
+- **DeepWiki:** https://deepwiki.com/revenuedot/agent-skills
+- **GitMCP:** https://gitmcp.io/revenuedot/agent-skills
+
 ## Repository layout
 
 - `plugins/revenuedot/`: the plugin that people install. It holds the manifests, the MCP configs, the skills, the images, the `claude plugin eval` suite, the listing README and the licence.
