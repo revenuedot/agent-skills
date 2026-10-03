@@ -1,0 +1,19 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "RevenueDot Agent Skills",
+  "description": "Plugin and skills for Claude, ChatGPT, Codex and Cursor that add subscriptions to an app, migrate from RevenueCat and self-host RevenueDot, the open-source RevenueCat alternative.",
+  "folders": [
+    "plugins/revenuedot"
+  ],
+  "excludeFolders": [
+    "plugins/revenuedot/evals",
+    "plugins/revenuedot/assets"
+  ],
+  "excludeFiles": [],
+  "rules": [
+    "Install in Claude Code with `/plugin marketplace add revenuedot/agent-skills`, then `/plugin install revenuedot@revenuedot`; for skills only, run `npx skills add revenuedot/agent-skills`.",
+    "Use add-subscriptions to add a paywall and subscriptions to an iOS, Android, React Native or Flutter app, and migrate-from-revenuecat to move an existing RevenueCat app without losing a subscriber.",
+    "The plugin connects to the RevenueDot MCP server at https://mcp.revenuedot.app/mcp; the Claude connector uses https://mcp.revenuedot.app/claude/mcp and the ChatGPT plugin https://mcp.revenuedot.app/chatgpt/mcp.",
+    "Apps keep the RevenueCat SDK and set its proxy URL to https://api.revenuedot.app (RevenueDot Cloud) or to their own RevenueDot server."
+  ]
+}
