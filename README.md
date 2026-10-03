@@ -1,4 +1,20 @@
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/revenuedot/revenuedot/main/brand/kit/wordmark/revenuedot-lockup-white.svg">
+  <img alt="RevenueDot" src="https://raw.githubusercontent.com/revenuedot/revenuedot/main/brand/kit/wordmark/revenuedot-lockup-black.svg" height="44">
+</picture>
+
 # RevenueDot plugin and agent skills
+
+**The RevenueDot plugin for Claude, ChatGPT and Codex, and skills for Claude Code, Codex and Cursor: add subscriptions and a paywall to an app, migrate from RevenueCat without losing a subscriber, self-host, answer support tickets, and a weekly revenue check.**
+
+[Main repository](https://github.com/revenuedot/revenuedot) · [MCP server](https://github.com/revenuedot/mcp) · [Docs](https://revenuedot.app/docs/guides/connect-ai-assistants) · [Start free on RevenueDot Cloud](https://app.revenuedot.app/signup)
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-0A0A0A)](LICENSE)
+[![Skills](https://img.shields.io/badge/skills-5-0A0A0A)](#skills)
+
+</div>
 
 This repository holds the RevenueDot plugin for Claude, ChatGPT and Codex. It connects an assistant to your RevenueDot project, an open-source backend for in-app subscriptions, and teaches it five workflows. The plugin itself is the folder [`plugins/revenuedot`](plugins/revenuedot); its [README](plugins/revenuedot/README.md) lists what it connects to, runs and sends.
 
