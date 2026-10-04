@@ -6,7 +6,7 @@ license: MIT
 
 # Self-host RevenueDot with Docker
 
-One container serves the SDK API (`/v1`), the REST API (`/v2`), store notifications (`/v1/notifications/...`) and the dashboard on port 8787, next to a Postgres 16 container. There is no published image yet, so Compose builds it from source (the first build takes a few minutes).
+One container serves the SDK API (`/v1`), the REST API (`/v2`), store notifications (`/v1/notifications/...`) and the dashboard on port 8787, next to a Postgres 16 container. Compose pulls the published image `ghcr.io/revenuedot/revenuedot` (linux/amd64 and linux/arm64, built on every change to `main` and tagged `latest`, by date such as `2026.10.03`, and by commit); `docker pull ghcr.io/revenuedot/revenuedot:latest` needs no account. Building from source stays available for running your own changes (phase 7).
 
 RevenueDot is not affiliated with RevenueCat, Inc.
 
@@ -37,8 +37,10 @@ The developer fills in `.env` in their own editor and terminal. The assistant ne
 Then:
 
 ```bash
-docker compose up -d            # builds the image from https://github.com/revenuedot/revenuedot.git#main
+docker compose up -d            # pulls ghcr.io/revenuedot/revenuedot:latest and starts it next to Postgres
 ```
+
+For production, the developer pins a date or commit tag in `.env` (`REVENUEDOT_IMAGE=ghcr.io/revenuedot/revenuedot:2026.10.03`) so a restart never picks up a build they have not tested. The tags are listed at https://github.com/revenuedot/revenuedot/pkgs/container/revenuedot.
 
 Settings in `.env`:
 
@@ -46,7 +48,8 @@ Settings in `.env`:
 |---|---|---|
 | `POSTGRES_PASSWORD` | none, required | Password of the bundled Postgres |
 | `REVENUEDOT_PORT` | `8787` | Host port for the API and the dashboard |
-| `REVENUEDOT_SOURCE` | `https://github.com/revenuedot/revenuedot.git#main` | Where the image is built from; can be a local checkout |
+| `REVENUEDOT_IMAGE` | `ghcr.io/revenuedot/revenuedot:latest` | The server image, pulled when missing. Pin a date or commit tag for production |
+| `REVENUEDOT_SOURCE` | `https://github.com/revenuedot/revenuedot.git#main` | Where `docker compose build` builds the image from instead of pulling it; can be a local checkout. See phase 7 |
 | `REVENUEDOT_ENCRYPTION_KEY` | empty | Required by this guide. Base64 of 32 random bytes that seals integration and data export credentials. Empty falls back to a key derived from the signing key; with neither, they are stored unencrypted |
 | `REVENUEDOT_PUBLIC_URL` | empty (the address each request came in on) | The public address of the dashboard, used for links in emails. See phase 2 |
 | `REVENUEDOT_ALLOW_SIGNUP` | `false` | Only the first account (the owner) can sign up. `true` lets anyone who can reach the dashboard create an account. See phase 3 |
@@ -55,7 +58,7 @@ Settings in `.env`:
 | `REVENUEDOT_MAIL_REPLY_TO` | empty | Reply-to address of those emails |
 | `REVENUEDOT_SIGNING_KEY` | empty (signing off) | Optional. Base64 Ed25519 seed for signed SDK responses. See phase 6 |
 
-Compose passes every `REVENUEDOT_*` setting except `REVENUEDOT_PORT` and `REVENUEDOT_SOURCE` from `.env` to the server.
+Compose passes every `REVENUEDOT_*` setting except `REVENUEDOT_PORT`, `REVENUEDOT_IMAGE` and `REVENUEDOT_SOURCE` from `.env` to the server, plus the optional settings the monorepo's own compose file passes (web billing, AI features, the AdMob OAuth client, export archives), all off or at their default when unset; the self-hosting guide's settings table describes them.
 
 Inside the container the server reads:
 
@@ -67,7 +70,7 @@ Inside the container the server reads:
 
 App Store and Google Play credentials are not environment variables. They belong to each app (phase 5).
 
-The `revenuedot/revenuedot` monorepo also has a `docker-compose.yml` at its root that builds from the checkout (`build: .`). Its Postgres password falls back to `revenuedot` when it is unset, so always set it there too.
+The `revenuedot/revenuedot` monorepo also has a `docker-compose.yml` at its root that pulls the same image, with `build: .` as the build-from-source fallback. Its Postgres password falls back to `revenuedot` when it is unset, so always set it there too.
 
 **Check:**
 ```bash
@@ -152,9 +155,13 @@ docker compose stop revenuedot
 docker compose exec -T db pg_restore -U revenuedot -d revenuedot --clean --if-exists < revenuedot-2026-09-30.dump
 docker compose start revenuedot
 
-# Upgrade: back up first, then rebuild from the latest source. Migrations run on start.
-docker compose build --pull revenuedot && docker compose up -d
+# Upgrade: back up first, then pull the new image and restart. Migrations run on start.
+docker compose pull && docker compose up -d
 ```
+
+With `REVENUEDOT_IMAGE` pinned to a date or commit tag, an upgrade is: back up, change the tag in `.env`, `docker compose up -d`. If the new build fails to start (`docker compose logs revenuedot --tail 100` names the failed migration), the developer sets the tag that worked in `.env` and runs `docker compose up -d` again.
+
+To run their own changes instead of the published image, the developer builds from source: set `REVENUEDOT_SOURCE` in `.env` to a local checkout (the default builds GitHub `main`) and `REVENUEDOT_IMAGE` to a name of their own such as `revenuedot:local`, so a later `docker compose pull` does not replace the build, then run `docker compose build && docker compose up -d` (the first build takes a few minutes; `docker compose build --pull && docker compose up -d` rebuilds after each change).
 
 Back up `.env` too, stored apart from the dumps: it holds `REVENUEDOT_ENCRYPTION_KEY`, and a restored database without that key cannot open the integrations' credentials.
 
