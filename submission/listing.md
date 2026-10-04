@@ -1,5 +1,9 @@
 # Directory listing copy (ChatGPT app directory and Claude connector directory)
 
+> **Plugin (Claude Code, Claude, Codex), 2026-10-03:** one plugin, id `revenuedot`, display name **RevenueDot App Monetization**, version 0.2.0, folder `plugins/revenuedot` (never renamed or moved). It bundles a free layer (eight monetization skills and the no-auth knowledge server `https://mcp.revenuedot.app/kit/mcp`) and the account layer below (five skills, 38 tools over OAuth). RevenueDot maintains it and every skill and tool result says so. **The ChatGPT listing and the Claude connector listing below are unchanged:** the ChatGPT ZIP is frozen by `openai-overlay.json` and `openai-README.md` (old name "RevenueDot", the five account skills, `/chatgpt/mcp` only), and the connector URLs and tools are the same.
+> **What a ChatGPT version of the free layer would need:** OpenAI bans pricing, free, trial, discount and comparison words in listing copy, and the eight skills talk about prices, trials and store-native alternatives. It would need an OpenAI-safe copy of the skills (no price or comparison wording), its own connector or a second MCP server in the ZIP's `mcp.json` (a no-auth server is a new scan target), a new submission and a new ZIP version.
+> **Claude plugin one-liner (200 characters):** Plan, price, build and test your app's subscriptions and paywall for free, then run them from Claude: MRR, customers, plans, paywall offerings, refunds, store fixes. Made by RevenueDot.
+
 **Name:** RevenueDot (10 characters)
 **Subtitle (OpenAI limit 30 characters):** Run subscriptions from chat (27)
 **Claude one-liner (200 characters):** Manage your mobile app's subscriptions and in-app purchases: check MRR and revenue, look up customers, set up plans and paywall offerings, and fix App Store and Google Play issues.

@@ -1,0 +1,38 @@
+{
+  "_note": "The ChatGPT upload ZIP is frozen at the listing that is in OpenAI review. scripts/pack-openai.sh merges these fields over plugins/revenuedot/plugin.json when it builds the ZIP, so the ZIP keeps the old name, copy and version while the plugin grows. OpenAI bans pricing, free, trial, discount and comparison words in this copy. Change this file only when a new ChatGPT submission is wanted.",
+  "version": "0.1.10",
+  "description": "Manage your mobile app's subscriptions and in-app purchases from chat: check MRR, look up customers, grant or extend access, set up plans and paywall offerings, and fix App Store and Google Play issues.",
+  "keywords": [
+    "subscriptions",
+    "in-app-purchases",
+    "app-store",
+    "google-play",
+    "paywall",
+    "entitlements",
+    "webhooks",
+    "customer-support"
+  ],
+  "interface": {
+    "displayName": "RevenueDot",
+    "shortDescription": "Run mobile app subscriptions",
+    "longDescription": "Manage your iOS and Android app's subscriptions and in-app purchases from chat. Connect your RevenueDot project to check MRR and revenue, find a customer by email or app user id and see why they lost access, grant or extend access, cancel with your confirmation, set up plans and paywall offerings, and fix App Store, Google Play and webhook problems. RevenueDot is an open-source subscription backend for mobile apps. It never asks for store keys or passwords.",
+    "developerName": "RevenueDot",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://revenuedot.app",
+    "privacyPolicyURL": "https://revenuedot.app/legal/privacy",
+    "termsOfServiceURL": "https://revenuedot.app/legal/terms",
+    "defaultPrompt": [
+      "How is revenue this month, and did any webhook fail?",
+      "Find the customer with email jane@example.com and tell me why they lost access.",
+      "Set up monthly and annual Pro plans behind a pro entitlement."
+    ],
+    "brandColor": "#0A0A0A",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "supportURL": "https://revenuedot.app/docs/help"
+  }
+}

@@ -4,10 +4,6 @@
     "revenuedot": {
       "type": "streamable-http",
       "url": "https://mcp.revenuedot.app/chatgpt/mcp"
-    },
-    "revenuedot-knowledge": {
-      "type": "streamable-http",
-      "url": "https://mcp.revenuedot.app/kit/mcp"
     }
   }
 }
