@@ -1,8 +1,8 @@
 {
   "name": "revenuedot",
-  "displayName": "RevenueDot",
-  "version": "0.1.10",
-  "description": "Manage your mobile app's subscriptions and in-app purchases from Claude: check MRR, look up customers, set up plans and paywall offerings, grant, extend or refund, and fix App Store and Google Play issues. Works with the RevenueCat SDK.",
+  "displayName": "RevenueDot App Monetization",
+  "version": "0.2.0",
+  "description": "Plan, price, build and test your app's subscriptions and paywall with free skills and a free knowledge server (no account), and, once you sign in, run them from Claude: check MRR, look up customers, set up plans and paywall offerings, grant, extend or refund, and fix App Store and Google Play issues. Made by RevenueDot, the open-source in-app purchase backend.",
   "author": {
     "name": "RevenueDot",
     "email": "support@revenuedot.app",
@@ -18,9 +18,11 @@
   "keywords": [
     "subscriptions",
     "in-app-purchases",
+    "monetization",
+    "paywall",
+    "pricing",
     "app-store",
     "google-play",
-    "paywall",
     "entitlements",
     "webhooks",
     "customer-support"

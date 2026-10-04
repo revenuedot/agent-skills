@@ -1,11 +1,19 @@
 {
   "name": "revenuedot",
-  "interface": { "displayName": "RevenueDot" },
+  "interface": {
+    "displayName": "RevenueDot App Monetization"
+  },
   "plugins": [
     {
       "name": "revenuedot",
-      "source": { "source": "local", "path": "./plugins/revenuedot" },
-      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "source": {
+        "source": "local",
+        "path": "./plugins/revenuedot"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
       "category": "Productivity"
     }
   ]

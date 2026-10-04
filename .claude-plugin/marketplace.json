@@ -8,11 +8,11 @@
     {
       "name": "revenuedot",
       "source": "./plugins/revenuedot",
-      "description": "RevenueDot connector and skills: manage your mobile app's subscriptions, in-app purchases, customers, paywall offerings and revenue from chat.",
+      "description": "RevenueDot App Monetization: free skills and a free knowledge server to plan, price, build and test an app's subscriptions and paywall, plus the RevenueDot connector (sign-in) to run subscriptions, customers, offerings and revenue from chat.",
       "category": "productivity"
     }
   ],
   "metadata": {
-    "description": "RevenueDot plugin: connector and skills to manage in-app subscriptions from chat."
+    "description": "RevenueDot App Monetization plugin: monetization skills and knowledge server (no account) and the account connector to manage in-app subscriptions from chat."
   }
 }

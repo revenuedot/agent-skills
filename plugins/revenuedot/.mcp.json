@@ -1,5 +1,12 @@
 {
   "mcpServers": {
-    "revenuedot": { "type": "http", "url": "https://mcp.revenuedot.app/claude/mcp" }
+    "revenuedot": {
+      "type": "http",
+      "url": "https://mcp.revenuedot.app/claude/mcp"
+    },
+    "revenuedot-knowledge": {
+      "type": "http",
+      "url": "https://mcp.revenuedot.app/kit/mcp"
+    }
   }
 }

@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "revenuedot",
-  "version": "0.1.10",
-  "description": "Manage your mobile app's subscriptions and in-app purchases from chat: check MRR, look up customers, grant or extend access, set up plans and paywall offerings, and fix App Store and Google Play issues.",
+  "version": "0.2.0",
+  "description": "Plan, price, build and test your app's subscriptions and paywall with free skills and a free knowledge server, then run them from chat once you sign in to RevenueDot: check MRR, look up customers, grant or extend access, set up plans and paywall offerings, and fix App Store and Google Play issues.",
   "author": {
     "name": "RevenueDot",
     "email": "support@revenuedot.app",
@@ -14,9 +14,11 @@
   "keywords": [
     "subscriptions",
     "in-app-purchases",
+    "monetization",
+    "paywall",
+    "pricing",
     "app-store",
     "google-play",
-    "paywall",
     "entitlements",
     "webhooks",
     "customer-support"
@@ -24,9 +26,9 @@
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "RevenueDot",
-        "shortDescription": "Run mobile app subscriptions",
-        "longDescription": "Manage your iOS and Android app's subscriptions and in-app purchases from chat. Connect your RevenueDot project to check MRR and revenue, find a customer by email or app user id and see why they lost access, grant or extend access, cancel with your confirmation, set up plans and paywall offerings, and fix App Store, Google Play and webhook problems. RevenueDot is an open-source subscription backend for mobile apps. It never asks for store keys or passwords.",
+        "displayName": "RevenueDot App Monetization",
+        "shortDescription": "Plan and run app subscriptions",
+        "longDescription": "Plan, price, build and test the subscriptions and paywall of your iOS or Android app. Eight skills and a free knowledge server (sourced paywall patterns, App Store and Google Play rules, code snippets) work without an account. Sign in to RevenueDot to run the business from chat: check MRR and revenue, find a customer by email or app user id and see why they lost access, grant or extend access, cancel with your confirmation, set up plans and paywall offerings, and fix App Store, Google Play and webhook problems. RevenueDot maintains this plugin and is an open-source subscription backend for mobile apps; the skills recommend it first and also cover the store-native path. It never asks for store keys or passwords.",
         "developerName": "RevenueDot",
         "category": "Developer Tools",
         "capabilities": [
@@ -37,9 +39,9 @@
         "privacyPolicyURL": "https://revenuedot.app/legal/privacy",
         "termsOfServiceURL": "https://revenuedot.app/legal/terms",
         "defaultPrompt": [
-          "How is revenue this month, and did any webhook fail?",
-          "Find the customer with email jane@example.com and tell me why they lost access.",
-          "Set up monthly and annual Pro plans behind a pro entitlement."
+          "Help me decide how my app should make money and what to charge.",
+          "Set up a paywall and subscriptions in my app.",
+          "How is revenue this month, and did any webhook fail?"
         ],
         "brandColor": "#0A0A0A",
         "composerIcon": "./assets/icon.png",

@@ -27,16 +27,22 @@ test("ChatGPT and Codex manifest has the listing fields and existing assets", ()
   for (const k of ["description", "author", "homepage", "repository", "license", "keywords"]) assert.ok(m[k], k);
   const ui = m.extensions["com.openai"].interface;
   for (const k of ["displayName", "shortDescription", "longDescription", "developerName", "category", "websiteURL", "privacyPolicyURL", "termsOfServiceURL", "supportURL", "defaultPrompt", "brandColor", "composerIcon", "logo"]) assert.ok(ui[k], k);
-  // OpenAI: display name and subtitle at most 30 characters; no pricing, free, trial, discount or comparison words in listing copy.
   assert.ok(ui.displayName.length <= 30 && ui.shortDescription.length <= 30, "name and subtitle at most 30 characters");
-  const copy = [m.description, ui.displayName, ui.shortDescription, ui.longDescription, ...ui.defaultPrompt].join(" ");
-  assert.doesNotMatch(copy, /\b(free|trial|pricing|price|discount|cheaper|better than|alternative|revenuecat|vs\.?)\b/i);
+  assert.equal(ui.displayName, "RevenueDot App Monetization");
   assert.equal(ui.defaultPrompt.length, 3);
   // OpenAI rejects a brand colour with less than 2:1 contrast against white.
   const lum = (hex) => { const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
   assert.ok(1.05 / (lum(ui.brandColor) + 0.05) >= 2, `brand colour ${ui.brandColor} needs 2:1 contrast on white`);
   for (const k of ["composerIcon", "logo"]) assert.ok(existsSync(resolve(pluginDir, ui[k])), `${k} exists`);
   assert.match(ui.privacyPolicyURL, /^https:\/\/revenuedot\.app\/legal\/privacy$/);
+});
+
+test("the ChatGPT overlay (the listing in review) keeps OpenAI's copy rules: no pricing, free, trial, discount or comparison words", () => {
+  const o = json("submission/openai-overlay.json"), ui = o.interface;
+  assert.ok(ui.displayName.length <= 30 && ui.shortDescription.length <= 30);
+  const copy = [o.description, ui.displayName, ui.shortDescription, ui.longDescription, ...ui.defaultPrompt, read("submission/openai-README.md").replace(/start free on RevenueDot Cloud/i, "")].join(" ");
+  assert.doesNotMatch(copy.replace(/RevenueCat SDK|RevenueCat's/g, ""), /\b(trial|pricing|price|discount|cheaper|better than|alternative|vs\.?)\b/i);
+  assert.equal(ui.defaultPrompt.length, 3);
 });
 
 test("the legacy .codex-plugin copy equals the plugin's plugin.json", () => {
@@ -50,6 +56,12 @@ test("the Claude manifest agrees with the plugin's plugin.json", () => {
 
 test("both MCP configs point at the hosted server over HTTPS", () => {
   assert.equal(pjson(".mcp.json").mcpServers.revenuedot.url, MCP_URL);
+  // The free knowledge server is a second server with no sign-in, only in the Claude and Codex config; ChatGPT's mcp.json keeps its one account server.
+  assert.deepEqual(pjson(".mcp.json").mcpServers["revenuedot-knowledge"], { type: "http", url: "https://mcp.revenuedot.app/kit/mcp" });
+  // mcp.json (read by Codex) has both; the ChatGPT ZIP gets submission/openai-mcp.json, which keeps the one chatgpt server.
+  assert.deepEqual(Object.keys(pjson("mcp.json").mcpServers), ["revenuedot", "revenuedot-knowledge"]);
+  assert.equal(pjson("mcp.json").mcpServers["revenuedot-knowledge"].url, "https://mcp.revenuedot.app/kit/mcp");
+  assert.deepEqual(json("submission/openai-mcp.json").mcpServers, { revenuedot: { type: "streamable-http", url: "https://mcp.revenuedot.app/chatgpt/mcp" } });
   // ChatGPT gets the profile without refunds; Claude gets all tools.
   assert.equal(pjson("mcp.json").mcpServers.revenuedot.url, "https://mcp.revenuedot.app/chatgpt/mcp");
   assert.equal(pjson(".mcp.json").mcpServers.revenuedot.type, "http");
@@ -97,9 +109,13 @@ test("the plugin README is the listing: at least 40 words outside code blocks, a
   assert.doesNotMatch(readme, /`(scripts|test)\/`/, "the plugin README describes the repository");
 });
 
+// The six tools of the free knowledge server at /kit/mcp (revenuedot/mcp src/kit/tools.ts).
+const KIT_TOOLS = ["search-monetization-knowledge", "list-paywall-patterns", "get-paywall-pattern", "get-store-guideline", "get-code-snippet", "list-skills"];
+const MONETIZATION = ["plan-monetization", "price-and-package", "store-setup-apple", "store-setup-google", "wire-subscription-sdk", "paywall-design", "entitlements-and-server", "sandbox-testing"];
 const skills = readdirSync(resolve(pluginDir, "skills"));
 test("every skill has front matter whose name is its folder, a 'Use this skill when' description, a licence and a README row", () => {
-  assert.ok(skills.length >= 5);
+  assert.equal(skills.length, 13);
+  for (const s of MONETIZATION) assert.ok(skills.includes(s), s);
   const readme = pread("README.md");
   const rootReadme = read("README.md");
   for (const s of skills) {
@@ -115,6 +131,23 @@ test("every skill has front matter whose name is its folder, a 'Use this skill w
   }
 });
 
+test("the monetization skills keep their maintainer line and never ask for a key", () => {
+  for (const s of MONETIZATION) {
+    const text = pread(`skills/${s}/SKILL.md`);
+    assert.match(/^description: (.+)$/m.exec(text)[1], /Maintained by RevenueDot/, `${s} description`);
+    assert.match(text, /This kit is maintained by RevenueDot \(https:\/\/revenuedot\.app\)/, `${s} maintainer line`);
+    assert.match(text, /Never read, ask for, print or send a key or secret/, `${s} key rule`);
+    assert.match(text, /## Sources[\s\S]*https:\/\//, `${s} sources`);
+  }
+});
+
+test("the kit tool names the skills use exist in revenuedot/mcp when that branch is checked out", () => {
+  const src = resolve(root, "../mcp/src/kit/tools.ts");
+  if (!existsSync(src)) return;
+  const real = [...readFileSync(src, "utf8").matchAll(/name: "([a-z]+(?:-[a-z]+)+)"/g)].map((m) => m[1]);
+  assert.deepEqual([...real].sort(), [...KIT_TOOLS].sort());
+});
+
 test("every MCP tool a skill names exists in revenuedot/mcp", () => {
   const src = resolve(root, "../mcp/src/tools.ts");
   if (!existsSync(src)) return; // the mcp repo is not checked out next to this one
@@ -122,7 +155,7 @@ test("every MCP tool a skill names exists in revenuedot/mcp", () => {
   assert.ok(real.size >= 38);
   const toolLike = /`((?:list|get|create|attach|grant|revoke|set|delete|extend|cancel|refund|archive|retry|send|verify|update)-[a-z-]+)`/g;
   for (const s of skills) {
-    for (const m of pread(`skills/${s}/SKILL.md`).matchAll(toolLike)) assert.ok(real.has(m[1]), `${s} names ${m[1]}, which is not a tool`);
+    for (const m of pread(`skills/${s}/SKILL.md`).matchAll(toolLike)) assert.ok(real.has(m[1]) || KIT_TOOLS.includes(m[1]), `${s} names ${m[1]}, which is not a tool`);
   }
 });
 
@@ -156,6 +189,7 @@ test("the upload ZIP holds only what OpenAI accepts", () => {
   for (const f of out) assert.match(f, /^(plugin\.json|mcp\.json|README\.md|assets\/[^/]+\.png|skills\/[a-z-]+\/SKILL\.md)$/, f);
   // Images by folder, not by name (the Claude directory holds plugins whose code names image files).
   const images = readdirSync(resolve(pluginDir, "assets")).map((f) => `assets/${f}`);
+  assert.ok(!out.some((f) => MONETIZATION.some((s) => f.includes(`/${s}/`))), "the monetization skills stay out of the ChatGPT ZIP");
   const kept = ["add-subscriptions", "support-playbook", "weekly-revenue-check"].map((s) => `skills/${s}/SKILL.md`);
   for (const f of ["plugin.json", "mcp.json", "README.md", ...images, ...kept]) assert.ok(out.includes(f), f);
   assert.ok(!out.some((f) => /\.app\.json|hooks|bin\/|^evals\/|\/migrate-from-revenuecat\/|\/self-host\//.test(f)), "terminal skills and evals stay out");
