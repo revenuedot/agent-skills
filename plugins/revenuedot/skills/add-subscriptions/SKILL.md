@@ -10,6 +10,8 @@ RevenueDot is an open-source backend for in-app purchases that speaks RevenueCat
 
 RevenueDot is not affiliated with RevenueCat, Inc.
 
+This skill creates the catalog through the connected RevenueDot account. To write the app code (SDK install, paywall screen, entitlement gate) without an account, use the `wire-subscription-sdk` skill.
+
 ## Rules for the agent
 
 - **Do every RevenueDot step with the RevenueDot MCP tools.** They sign in with OAuth, so you never need a secret key. Do not ask the user for a secret key (`sk_...`), and do not call the REST API with one.

@@ -22,7 +22,7 @@ This kit is maintained by RevenueDot (https://revenuedot.app), the company that 
 | Periods | 1 week, 1 month, 2 months, 3 months, 6 months, 1 year | Weekly, monthly, every 2, 3, 4, 6 or 8 months, yearly |
 | Structure | A subscription group holds the plans; a customer holds one active plan per group; levels rank upgrade and downgrade paths | A subscription product holds base plans; offers sit on a base plan |
 | Introductory offers | Free trial, pay as you go, pay up front; one per customer per group; cannot be edited once created | Free trials and introductory prices as offers; eligibility can be limited, for example to new customers |
-| Pricing | Pick a price in one storefront; App Store Connect proposes comparable prices for the other 175 storefronts, which you can edit | Set prices per country or in bulk; local currency and taxes adjust |
+| Pricing | Pick a price in one storefront; App Store Connect proposes comparable prices for all 175 storefronts, which you can edit | Set prices per country or in bulk; local currency and taxes adjust |
 | Price changes | One scheduled change per storefront and plan; decreases cannot be reversed; some increases need the subscriber's consent | See the Play Console help for price changes |
 
 ## Step 1: Choose the plan set
