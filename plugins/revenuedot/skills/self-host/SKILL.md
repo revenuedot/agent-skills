@@ -126,7 +126,7 @@ Create an app per store: `create-app` with `type: "app_store"` and `bundle_id`, 
    - App Store: **In-app purchase key**, the In-App Purchase key from App Store Connect (.p8 file, key ID, issuer ID).
    - Google Play: **Service account credentials**, the JSON of a service account with the "View financial data" permission.
    Then call `verify-store-credentials` with the `app_id`, or the developer clicks **Check credentials** on the same page. It answers `valid` when Apple or Google accept them.
-2. **Notification URLs.** `get-app-store-settings` with the `app_id` returns the exact `notification_url`, and `api_origin`, which is the SDK's proxy URL. The app's dashboard page shows the same URL with a copy button.
+2. **Notification URLs.** `get-app-store-settings` with the `app_id` returns the exact `notification_url`, and `api_origin`, which the app sets as the RevenueDot SDK's proxy URL before `configure` (the `add-subscriptions` skill shows the line per platform). The app's dashboard page shows the same URL with a copy button.
    - App Store: the URL has the form `https://revenuedot.example.com/v1/notifications/apple/<app_id>`. Paste it into App Store Connect > App Information > App Store Server Notifications, for Production and Sandbox.
    - Google Play: the URL has the form `https://revenuedot.example.com/v1/notifications/google/<app_id>`. In Google Cloud > Pub/Sub, open the topic set in Play Console > Monetization setup and add a **push** subscription to this URL.
 
@@ -134,9 +134,9 @@ Create an app per store: `create-app` with `type: "app_store"` and `bundle_id`, 
 
 ## Phase 6: Response signing (optional)
 
-The RevenueCat SDKs check response signatures against RevenueCat's key, which RevenueDot does not have. Apps using those SDKs must turn verification off (see the `add-subscriptions` skill), and `REVENUEDOT_SIGNING_KEY` is not needed.
+The RevenueDot SDK trusts only RevenueDot Cloud's response-signing key, and an app that still ships the RevenueCat SDK trusts only RevenueCat's. So apps that talk to a self-hosted server keep entitlement verification disabled (see the `add-subscriptions` skill), and `REVENUEDOT_SIGNING_KEY` is not needed.
 
-Set it only for SDK builds that pin this server's own public key. The developer does these steps in their own terminal, because the output is a private key:
+Set it only for SDK builds that pin this server's own public key (see https://revenuedot.app/docs/guides/trusted-entitlements). The developer does these steps in their own terminal, because the output is a private key:
 1. In a checkout of the `revenuedot/revenuedot` repository, run `pnpm install && pnpm tsx scripts/signing-keygen.ts`. It prints the private seed as a `REVENUEDOT_SIGNING_KEY=...` line, and the public key.
 2. Paste the printed `REVENUEDOT_SIGNING_KEY=...` line into `.env` (`.env.example` has it commented out), then run `docker compose up -d`. The compose file in `selfhost/docker-compose` already passes this variable from `.env` to the server, so nothing in `docker-compose.yml` changes.
 

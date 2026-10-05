@@ -1,12 +1,12 @@
 ---
 name: add-subscriptions
-description: Use this skill when the user wants to add in-app subscriptions, a paywall, a premium plan, a free trial or a lifetime purchase to an iOS, Android, React Native, Flutter or Expo app, with RevenueDot as the subscription backend. It covers creating the catalog, installing and configuring the SDK, showing offerings, gating features on an entitlement, testing with the Test Store and connecting App Store and Google Play credentials, including when the user pastes a store key into the chat.
+description: Use this skill when the user wants to add in-app subscriptions, a paywall, a premium plan, a free trial or a lifetime purchase to an iOS, Android, React Native, Flutter or Expo app, with RevenueDot as the subscription backend. It covers creating the catalog, installing and configuring the RevenueDot SDK, showing offerings, gating features on an entitlement, testing with the Test Store and connecting App Store and Google Play credentials, including when the user pastes a store key into the chat.
 license: MIT
 ---
 
 # Add subscriptions to an app with RevenueDot
 
-RevenueDot is an open-source backend for in-app purchases that speaks RevenueCat's API. Apps use the RevenueCat SDK, pointed at a RevenueDot server with a proxy URL. The steps below set up one `pro` entitlement sold as monthly and yearly subscriptions, using the RevenueDot MCP tools.
+RevenueDot is an open-source backend for in-app purchases and subscriptions on the App Store and Google Play. The app installs the RevenueDot SDK and passes its public key. On RevenueDot Cloud nothing else is needed. The steps below set up one `pro` entitlement (the access the app checks) sold as monthly and yearly subscriptions, using the RevenueDot MCP tools.
 
 RevenueDot is not affiliated with RevenueCat, Inc.
 
@@ -24,7 +24,7 @@ This skill creates the catalog through the connected RevenueDot account. To writ
 ## What you need
 
 1. **The RevenueDot connector connected.** In Claude, that is the RevenueDot connector or this plugin's MCP server, `https://mcp.revenuedot.app/claude/mcp`. Other clients use `https://mcp.revenuedot.app/mcp`. Connecting opens a RevenueDot sign-in (OAuth): the user picks the project and **read and change** access. There is nothing to paste.
-2. A RevenueDot account. For RevenueDot Cloud, sign up at https://app.revenuedot.app (free plan); the SDK's proxy URL is `https://api.revenuedot.app`. To run your own server, use the `self-host` skill first.
+2. A RevenueDot account. For RevenueDot Cloud, sign up at https://app.revenuedot.app/signup (free plan). To run your own server, use the `self-host` skill first.
 3. The app's bundle id (iOS) and package name (Android).
 
 Every tool takes an optional `project_id`. Leave it out: the connection has one project.
@@ -66,34 +66,71 @@ Create each product once per app, with the same store identifier the store uses:
 
 Call `list-public-api-keys` with each `app_id`. `items[0].key` is the key: `test_...` for the Test Store app, `appl_...` for iOS, `goog_...` for Android. Without that tool, the user copies the key from the app's page in the dashboard.
 
-`get-app-store-settings` returns `api_origin`: the server's public URL, which is the SDK's proxy URL. For RevenueDot Cloud it is `https://api.revenuedot.app`.
+On a self-hosted server, `get-app-store-settings` also returns `api_origin`, the server's public URL. Phase 5 needs it. On RevenueDot Cloud it is `https://api.revenuedot.app`, and the app does not set it.
 
 **Check:** you have one key per app.
 
-## Phase 5: Install and configure the SDK
+## Phase 5: Install the RevenueDot SDK and pass the app's key
 
-RevenueDot's examples use RevenueCat's published SDKs. Install the SDK the usual way:
+Install the RevenueDot SDK for the app's framework. The RevenueDot SDK is built from RevenueCat's open-source SDK (MIT license), so the code imports `RevenueCat` (or `react-native-purchases`, `purchases_flutter`) and calls `Purchases`. It sends every request to RevenueDot and needs no RevenueCat account.
 
-| Platform | Package (version the examples use) |
+| Platform | Install the RevenueDot SDK |
 |---|---|
-| iOS (Swift Package Manager) | `https://github.com/RevenueCat/purchases-ios-spm.git`, from `5.91.0`, product `RevenueCat` |
-| Android (Gradle) | `implementation("com.revenuecat.purchases:purchases:10.24.0")` |
-| React Native, Expo | `npm install react-native-purchases` (examples: `^10.10.2`) |
-| Flutter | `purchases_flutter: ^10.13.2` in `pubspec.yaml` |
+| iOS, macOS, tvOS, watchOS, visionOS | Swift Package Manager: `https://github.com/revenuedot/purchases-ios`, exact version `5.91.0-revenuedot`, product `RevenueCat` (and `RevenueCatUI` for paywalls). CocoaPods: `pod 'RevenueDotPurchases', '5.91.0'` (and `RevenueDotPurchasesUI` for paywalls) |
+| Android | `implementation("app.revenuedot.purchases:purchases:10.23.3")` in `build.gradle.kts` (and `purchases-ui` for paywalls) |
+| React Native, Expo | `npm install react-native-purchases@npm:@revenuedot/react-native-purchases@10.10.2`. The npm alias keeps `import Purchases from "react-native-purchases"` working |
+| Flutter | A git dependency in `pubspec.yaml`, shown below, because the pub.dev name belongs to RevenueCat |
 
-Configure once at app start. Set the proxy URL **before** `configure`:
+```yaml
+# pubspec.yaml
+dependencies:
+  purchases_flutter:
+    git:
+      url: https://github.com/revenuedot/purchases-flutter.git
+      ref: 10.13.2-revenuedot
+```
+
+The web, Capacitor, Kotlin Multiplatform, Unity and Cordova SDKs are listed at https://revenuedot.app/docs/sdks.
+
+**On RevenueDot Cloud, configure with the app's public key and nothing else.** The SDK already sends every request to `https://api.revenuedot.app` and trusts RevenueDot Cloud's response-signing key. Configure once at app start:
 
 ```swift
-// iOS: App init
+// iOS: in the App's init()
 import RevenueCat
+Purchases.configure(withAPIKey: "appl_...")
+```
+
+```kotlin
+// Android: in Application.onCreate()
+Purchases.configure(PurchasesConfiguration.Builder(this, "goog_...").build())
+```
+
+```ts
+// React Native and Expo
+import { Platform } from "react-native";
+import Purchases from "react-native-purchases";
+Purchases.configure({ apiKey: Platform.OS === "ios" ? "appl_..." : "goog_..." });
+```
+
+```dart
+// Flutter
+await Purchases.configure(PurchasesConfiguration(Platform.isIOS ? 'appl_...' : 'goog_...'));
+```
+
+During development, pass the Test Store key (`test_...`) instead (phase 7).
+
+**On a self-hosted server, also set the proxy URL before `configure`, and keep entitlement verification disabled.** The proxy URL is `api_origin` from phase 4. The SDK trusts only RevenueDot Cloud's signing key, and a self-hosted server signs with its own key. iOS and Android set the mode to disabled; React Native and Flutter already default to disabled.
+
+```swift
+// iOS, self-hosted
 Purchases.proxyURL = URL(string: "https://revenuedot.example.com")!
 Purchases.configure(with: Configuration.Builder(withAPIKey: "appl_...")
-    .with(entitlementVerificationMode: .disabled)   // RevenueDot does not sign with RevenueCat's key
+    .with(entitlementVerificationMode: .disabled)
     .build())
 ```
 
 ```kotlin
-// Android: Application.onCreate
+// Android, self-hosted
 Purchases.proxyURL = URL("https://revenuedot.example.com")
 Purchases.configure(
     PurchasesConfiguration.Builder(this, "goog_...")
@@ -103,21 +140,22 @@ Purchases.configure(
 ```
 
 ```ts
-// React Native / Expo: verification is disabled by default
-import Purchases from "react-native-purchases";
+// React Native and Expo, self-hosted. setProxyURL returns a promise: await it before configure.
 await Purchases.setProxyURL("https://revenuedot.example.com");
 Purchases.configure({ apiKey: Platform.OS === "ios" ? "appl_..." : "goog_..." });
 ```
 
 ```dart
-// Flutter (iOS and Android; Flutter web cannot use a proxy URL yet). Verification is disabled by default.
+// Flutter, self-hosted. It works on iOS, Android and Flutter web.
 await Purchases.setProxyURL('https://revenuedot.example.com');
 await Purchases.configure(PurchasesConfiguration(Platform.isIOS ? 'appl_...' : 'goog_...'));
 ```
 
-Local development: the iOS simulator reaches the computer as `http://localhost:8787`, the Android emulator as `http://10.0.2.2:8787`. A real phone needs an `https://` URL.
+Local development against a server on the computer: the iOS simulator reaches it as `http://localhost:8787`, the Android emulator as `http://10.0.2.2:8787`. A real phone needs an `https://` URL.
 
-**Check:** the app starts and the SDK debug log shows requests to the RevenueDot host, not `api.revenuecat.com`.
+**Check:** the app starts and the SDK debug log shows requests to `api.revenuedot.app` (or the self-hosted server), not `api.revenuecat.com`.
+
+**App already ships the RevenueCat SDK?** Skip this phase and use the `migrate-from-revenuecat` skill. The app keeps its SDK, sets the proxy URL to RevenueDot before `configure` and turns entitlement verification off. That skill also imports the existing customers.
 
 ## Phase 6: Show the paywall and gate on the entitlement
 
@@ -151,9 +189,9 @@ Complete paywall screens per platform: https://github.com/revenuedot/examples/tr
 
 Known limits today:
 - Test Store products show $0.00 unless the product has a price. The user sets it in the dashboard: **Products**, the product, **Test Store price** (for example 9.99 USD). Each Test Store product has one price.
-- In Expo Go and on the web, `react-native-purchases` only accepts `test_` and `rcb_` keys. Real store purchases need a development build, made with the project's own Expo CLI (`expo run:ios` / `expo run:android`).
+- In Expo Go and on the web, the React Native SDK runs in browser mode and buys only with a Test Store (`test_`) key. Real store purchases need a development build, made with the project's own Expo CLI (`expo run:ios` / `expo run:android`).
 
 ## Next
 
 - Send purchase events to the user's backend: `create-webhook-integration` with a `name` and the backend's `url`. The signing secret is returned once: tell the user to store it in their backend's secret settings right away.
-- Moving an app that already uses RevenueCat: use the `migrate-from-revenuecat` skill.
+- To move an app that already ships the RevenueCat SDK, use the `migrate-from-revenuecat` skill.
