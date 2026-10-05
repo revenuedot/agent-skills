@@ -13,7 +13,7 @@
 | ChatGPT | Search RevenueDot in the plugin directory, or add `https://mcp.revenuedot.app/chatgpt/mcp` as a connector in developer mode |
 | Codex | `codex plugin marketplace add revenuedot/agent-skills`, then install `revenuedot` |
 
-You need a RevenueDot account: [start for free on RevenueDot Cloud](https://app.revenuedot.app/signup), or run your own server. Connecting opens RevenueDot's sign-in page, where you pick one project and choose **read only** or **read and change**. Cancelling, refunding and extending subscriptions need a separate **Money actions** checkbox, and the assistant asks before every change.
+You need a RevenueDot account: [start for free on RevenueDot Cloud](https://app.revenuedot.app/signup). Connecting opens RevenueDot's sign-in page, where you pick one project and choose **read only** or **read and change**. Cancelling, refunding and extending subscriptions need a separate **Money actions** checkbox, and the assistant asks before every change.
 
 ## What you can ask
 
