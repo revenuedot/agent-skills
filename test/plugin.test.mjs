@@ -40,7 +40,7 @@ test("ChatGPT and Codex manifest has the listing fields and existing assets", ()
 test("the ChatGPT overlay (the listing in review) keeps OpenAI's copy rules: no pricing, free, trial, discount or comparison words", () => {
   const o = json("submission/openai-overlay.json"), ui = o.interface;
   assert.ok(ui.displayName.length <= 30 && ui.shortDescription.length <= 30);
-  const copy = [o.description, ui.displayName, ui.shortDescription, ui.longDescription, ...ui.defaultPrompt, read("submission/openai-README.md").replace(/start free on RevenueDot Cloud/i, "")].join(" ");
+  const copy = [o.description, ui.displayName, ui.shortDescription, ui.longDescription, ...ui.defaultPrompt, read("submission/openai-README.md").replace(/start for free on RevenueDot Cloud/i, "")].join(" ");
   assert.doesNotMatch(copy.replace(/RevenueCat SDK|RevenueCat's/g, ""), /\b(trial|pricing|price|discount|cheaper|better than|alternative|vs\.?)\b/i);
   assert.equal(ui.defaultPrompt.length, 3);
 });

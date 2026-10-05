@@ -17,7 +17,7 @@
 ## What needs sign-in and what does not
 
 - **No sign-in, no account:** the eight monetization skills and the knowledge server at `https://mcp.revenuedot.app/kit/mcp` (sourced paywall patterns, App Store and Google Play rules, code snippets). The server is read-only, takes no key and never touches a RevenueDot project.
-- **Sign-in needed:** the five account skills and the 38 tools at `https://mcp.revenuedot.app/claude/mcp`. You need a RevenueDot account: [start free on RevenueDot Cloud](https://app.revenuedot.app/signup), or run your own server. Connecting opens RevenueDot's sign-in page, where you pick one project and choose **read only** or **read and change**. Cancelling, refunding and extending subscriptions need a separate **Money actions** checkbox, and the assistant asks before every change.
+- **Sign-in needed:** the five account skills and the 38 tools at `https://mcp.revenuedot.app/claude/mcp`. You need a RevenueDot account: [start for free on RevenueDot Cloud](https://app.revenuedot.app/signup), or run your own server. Connecting opens RevenueDot's sign-in page, where you pick one project and choose **read only** or **read and change**. Cancelling, refunding and extending subscriptions need a separate **Money actions** checkbox, and the assistant asks before every change.
 
 ## What you can ask
 

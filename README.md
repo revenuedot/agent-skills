@@ -9,7 +9,7 @@
 
 **One plugin for Claude Code, Claude and Codex (the ChatGPT version has the account layer only), and skills for Cursor and other agents: plan, price, build and test an app's subscriptions and paywall for free, then run them from chat with a RevenueDot account, migrate from RevenueCat, self-host, answer support tickets and check revenue weekly.**
 
-[Main repository](https://github.com/revenuedot/revenuedot) · [MCP server](https://github.com/revenuedot/mcp) · [Docs](https://revenuedot.app/docs/guides/connect-ai-assistants) · [Start free on RevenueDot Cloud](https://app.revenuedot.app/signup)
+[Main repository](https://github.com/revenuedot/revenuedot) · [MCP server](https://github.com/revenuedot/mcp) · [Docs](https://revenuedot.app/docs/guides/connect-ai-assistants) · [Start for free on RevenueDot Cloud](https://app.revenuedot.app/signup)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-0A0A0A)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-13-0A0A0A)](#skills)
