@@ -1,6 +1,6 @@
 # RevenueDot App Monetization: plan, build and run your app's subscriptions
 
-**Plan, price, build and test the subscriptions and paywall of your iOS or Android app, then run them from chat: check MRR and revenue, look up customers and why they lost access, grant or extend access, set up plans and paywall offerings, and fix App Store and Google Play issues.** The plugin has two layers. The free layer (eight skills and a knowledge server) needs no account. The account layer (five skills and 38 tools) connects to your RevenueDot project, an open-source backend for in-app subscriptions that works with the RevenueCat SDK.
+**Plan, price, build and test the subscriptions and paywall of your iOS or Android app, then run them from chat: check MRR and revenue, look up customers and why they lost access, grant or extend access, set up plans and paywall offerings, and fix App Store and Google Play issues.** The plugin has two layers. The free layer (eight skills and a knowledge server) needs no account. The account layer (five skills and 38 tools) connects to your RevenueDot project, an open-source backend for in-app subscriptions. Your app installs the RevenueDot SDK. Switching from RevenueCat? Your app keeps its SDK and changes one line.
 
 [![Watch the 87-second demo of the RevenueDot account tools in ChatGPT](https://revenuedot.app/videos/revenuedot-chatgpt-demo.webp)](https://revenuedot.app/videos/revenuedot-chatgpt-demo.mp4)
 
@@ -38,11 +38,11 @@
 | [`price-and-package`](skills/price-and-package/SKILL.md) | None | You need plans, billing periods, introductory offers and prices per store, with consistent product, entitlement and offering names |
 | [`store-setup-apple`](skills/store-setup-apple/SKILL.md) | None | You are setting up App Store Connect: agreements, subscription groups, offers, sandbox testers |
 | [`store-setup-google`](skills/store-setup-google/SKILL.md) | None | You are setting up Play Console: subscriptions, base plans, offers, license testers |
-| [`wire-subscription-sdk`](skills/wire-subscription-sdk/SKILL.md) | None | You want the app code on iOS, Android, React Native, Expo or Flutter: install and configure the SDK, show offerings, check the entitlement, restore purchases (store-native path included) |
+| [`wire-subscription-sdk`](skills/wire-subscription-sdk/SKILL.md) | None | You want the app code on iOS, Android, React Native, Expo or Flutter: install and configure the RevenueDot SDK, show offerings, check the entitlement, restore purchases (store-native path included) |
 | [`paywall-design`](skills/paywall-design/SKILL.md) | None | You want to choose and build a paywall screen: layout, copy, localized prices, accessibility, store rules |
 | [`entitlements-and-server`](skills/entitlements-and-server/SKILL.md) | None | You need a backend that knows who paid: entitlement checks, webhooks, signature verification, idempotency |
 | [`sandbox-testing`](skills/sandbox-testing/SKILL.md) | None | You want to test purchases, renewals, billing problems and refunds without real money |
-| [`add-subscriptions`](skills/add-subscriptions/SKILL.md) | RevenueDot account | You want subscriptions and a paywall in an iOS, Android, React Native or Flutter app: create the catalog, configure the SDK, gate on an entitlement, test with the Test Store |
+| [`add-subscriptions`](skills/add-subscriptions/SKILL.md) | RevenueDot account | You want subscriptions and a paywall in an iOS, Android, React Native or Flutter app: create the catalog, install the RevenueDot SDK, gate on an entitlement, test with the Test Store |
 | [`migrate-from-revenuecat`](skills/migrate-from-revenuecat/SKILL.md) | Your own accounts | You ship the RevenueCat SDK and want to move to RevenueDot: import the project, run both side by side with store notifications forwarded, set the proxy URL, verify, then cut over |
 | [`support-playbook`](skills/support-playbook/SKILL.md) | RevenueDot account | You answer a subscription ticket: find the customer, explain why they have or lack access, then grant, extend, cancel or refund (money actions only after your yes) |
 | [`weekly-revenue-check`](skills/weekly-revenue-check/SKILL.md) | RevenueDot account | You want a five-line health and revenue report: store connections, failed webhooks, billing problems, MRR |
