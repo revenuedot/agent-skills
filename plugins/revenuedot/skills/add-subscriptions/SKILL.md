@@ -24,7 +24,7 @@ This skill creates the catalog through the connected RevenueDot account. To writ
 ## What you need
 
 1. **The RevenueDot connector connected.** In Claude, that is the RevenueDot connector or this plugin's MCP server, `https://mcp.revenuedot.app/claude/mcp`. Other clients use `https://mcp.revenuedot.app/mcp`. Connecting opens a RevenueDot sign-in (OAuth): the user picks the project and **read and change** access. There is nothing to paste.
-2. A RevenueDot account. For RevenueDot Cloud, sign up at https://app.revenuedot.app/signup (free plan). To run your own server, use the `self-host` skill first.
+2. A RevenueDot account. For RevenueDot Cloud, sign up at https://app.revenuedot.app/signup (free to build; Pro is $0 until your apps make $10,000 a month). To run your own server, use the `self-host` skill first.
 3. The app's bundle id (iOS) and package name (Android).
 
 Every tool takes an optional `project_id`. Leave it out: the connection has one project.
