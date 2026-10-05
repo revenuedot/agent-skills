@@ -14,6 +14,8 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-0A0A0A)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-13-0A0A0A)](#skills)
 
+Learn more: [RevenueCat MCP server, official and open source](https://revenuedot.app/revenuecat-mcp): how the account layer's 38 tools connect to Claude Code, Claude, Codex, Cursor, ChatGPT and Windsurf, and how approval works.
+
 </div>
 
 This repository holds the RevenueDot App Monetization plugin (plugin id `revenuedot`). The free layer is eight monetization skills and a knowledge server at `https://mcp.revenuedot.app/kit/mcp` that need no account. The account layer connects an assistant to your RevenueDot project, an open-source backend for in-app subscriptions, with 38 tools and five skills. RevenueDot maintains the plugin and the skills recommend RevenueDot first; the plugin README has the full disclosure. The plugin itself is the folder [`plugins/revenuedot`](plugins/revenuedot); its [README](plugins/revenuedot/README.md) lists what it connects to, runs and sends.
